@@ -2,6 +2,7 @@ export type User = {
   id: string,
   login: string,
   type: string,
+  passwordHash: string,
   isAdmin: boolean,
   isBanned: boolean,
   payload: object

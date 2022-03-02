@@ -42,7 +42,7 @@ export default class APIClient implements ApiContract {
 
   async execute<Request, Response> (method: string, request: Request): Promise<Response> {
     if (this.connection == null) {
-      throw new Error(`Not connected`)
+      throw new Error(`Not connected`);
     }
 
     const message = await this.connection.request(

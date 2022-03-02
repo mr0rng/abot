@@ -13,6 +13,9 @@ export class Config {
     uri: process.env.NATS || "localhost:6222",
     timeout: parseInt(process.env.API_TIMEOUT || "5000") || 5000
   }
+  sessions = {
+    uri: process.env.SESSIONS || "localhost:7001",
+  }
 }
 
 export default new Config()

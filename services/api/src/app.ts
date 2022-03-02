@@ -4,21 +4,26 @@ import { Config } from '@abot/config';
 import DAO from '@abot/dao';
 import { ApplicationError, Command } from './commands';
 import commands from './commands/list';
+import { SessionDao } from './sessions/client';
 
 class Application {
   private codec = JSONCodec();
   private connection?: NatsConnection;
-  private dao: DAO;
+  public dao: DAO;
+  public sessions: SessionDao;
 
   constructor (
     public config: Config
   ) { 
     this.dao = new DAO(config);
+    this.sessions = new SessionDao(config);
   }
 
   async start () {
     this.connection = await connect({ servers: this.config.nats.uri });
     this.connection.closed().then(() => { this.connection = undefined });
+
+    await this.sessions.start();
     
     await Promise.all(commands.map((command) => { this.subscribe(command) }))
   }
@@ -27,7 +32,8 @@ class Application {
     if (this.connection == null) {
       throw new Error('Application was not started')
     }
-    this.dao.end();
+    await this.dao.end();
+    await this.sessions.end();
 
     await this.connection.close();
     this.connection = undefined;

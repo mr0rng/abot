@@ -6,6 +6,7 @@ export type ApiContractUserPassword = {
 };
 
 export type PasswordSignUpInRequest = {
+  type: string,
   login: string,
   passwordHash: string
 };
