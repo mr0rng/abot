@@ -1,11 +1,12 @@
 import { Demand } from '@abot/model'
+import { Response } from "../response";
 
 export type ApiContractDemands = {
-  count: (request: DemandsSearchRequest) => Promise<DemandsCountResponse>,
-  search: (request: DemandsSearchRequest) => Promise<Demand[]>,
-  create: (request: Omit<Demand, "date" | "recipient">) => Promise<DemandsCreateResponse>,
-  update: (request: Omit<Demand, "recipient">) => Promise<undefined>,
-  next: (request: null) => Promise<Demand>
+  count: (request: DemandsSearchRequest) => Promise<Response<DemandsCountResponse>>,
+  search: (request: DemandsSearchRequest) => Promise<Response<Demand[]>>,
+  create: (request: Omit<Demand, "date" | "recipient">) => Promise<Response<DemandsCreateResponse>>,
+  update: (request: Omit<Demand, "recipient">) => Promise<Response<undefined>>,
+  next: (request: null) => Promise<Response<Demand>>
 };
 
 export type DemandsCountResponse = { 

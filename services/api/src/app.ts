@@ -37,16 +37,22 @@ class Application {
     if (this.connection == null) {
       throw new Error('Application was not started')
     }
-    
-    const subscribe = this.connection.subscribe(command.path)
+
+    const subscribe = this.connection.subscribe(command.path);
+
     for await (const message of subscribe) {
       try {
-        const response = await command.expecute(this, this.codec.decode(message.data))
-        message.respond(this.codec.encode({ 
-          status: 'ok', 
-          code: 200, 
-          response
-        }));
+        const response = await command.expecute(this, this.codec.decode(message.data));
+        message.respond(
+          this.codec.encode(
+          {
+              status: 'ok',
+              code: 200,
+              response,
+            }
+          )
+        );
+        return;
       } catch (e) {
         const appError = e as ApplicationError;
         if (appError.isApplicationError) {

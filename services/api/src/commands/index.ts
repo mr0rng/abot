@@ -9,14 +9,16 @@ export class Command<Request, Response> {
   constructor (
     public path: string, 
     public callback: CommandCallback<Request, Response>,
-    private schema: JSONSchemaType<Request>
+    private schema: JSONSchemaType<Request>,
   ) { 
     this.requestValidate = Command.ajv.compile(schema);
   }
 
   async expecute(app: Application, request: unknown): Promise<Response> {
     if (!this.requestValidate(request)) {
-      throw ApplicationError.request(`Invalid request.\nschema = ${JSON.stringify(this.schema, null, 2)}`)
+      throw ApplicationError.request(
+          `Invalid request.\nschema = ${JSON.stringify(this.schema, null, 2)} errors: ${this.requestValidate.errors}`
+      );
     }
 
     return this.callback(app, request as Request);
