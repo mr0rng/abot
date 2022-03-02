@@ -14,7 +14,7 @@ export class Command<Request, Response> {
     this.requestValidate = Command.ajv.compile(schema);
   }
 
-  async expecute(app: Application, request: unknown): Promise<Response> {
+  async execute(app: Application, request: unknown): Promise<Response> {
     if (!this.requestValidate(request)) {
       throw ApplicationError.request(
           `Invalid request.\nschema = ${JSON.stringify(this.schema, null, 2)} errors: ${this.requestValidate.errors}`

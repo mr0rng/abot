@@ -42,17 +42,12 @@ class Application {
 
     for await (const message of subscribe) {
       try {
-        const response = await command.expecute(this, this.codec.decode(message.data));
-        message.respond(
-          this.codec.encode(
-          {
-              status: 'ok',
-              code: 200,
-              response,
-            }
-          )
-        );
-        return;
+        const response = await command.execute(this, this.codec.decode(message.data))
+        message.respond(this.codec.encode({ 
+          status: 'ok', 
+          code: 200, 
+          response
+        }));
       } catch (e) {
         const appError = e as ApplicationError;
         if (appError.isApplicationError) {
