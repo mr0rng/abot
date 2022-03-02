@@ -1,27 +1,21 @@
+import { PasswordSignUpInRequest, PasswordSignUpInResponse } from '@abot/api-contract/target/user/password'
+
 import Application from '../../../app';
 import { Command } from '../..'
 
-export default new Command<Request, Response>(
-  "user/password/sign-up",
-  async (app: Application, request: Request): Promise<Response> => {
-    return {} as Response; 
+export default new Command<PasswordSignUpInRequest, PasswordSignUpInResponse>(
+  "user.password.signUp",
+  async (app: Application, request: PasswordSignUpInRequest): Promise<PasswordSignUpInResponse> => {
+    console.log('!!!!');
+    return { session: "asdadas" }
   },
   {
     type: "object",
     properties: {
       login: {type: "string"},
-      hash: {type: "string"},
+      passwordHash: {type: "string"},
     },
-    required: ["login", "hash"],
+    required: ["login", "passwordHash"],
     additionalProperties: false
   }
 )
-
-export type Request = {
-  login: string,
-  hash: string
-};
-
-export type Response = {
-
-};

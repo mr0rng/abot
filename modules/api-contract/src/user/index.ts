@@ -5,7 +5,7 @@ export type ApiContractUser = {
   get: (request: UserGetRequest) => Promise<UserGetResponse>,
 };
 
-export type UserGetRequest = { };
+export type UserGetRequest = { session: string };
 
 export type UserGetResponse = {
   login: string,

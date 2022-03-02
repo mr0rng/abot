@@ -1,23 +1,13 @@
+import { Demand } from '@abot/model'
+
 export type ApiContractDemands = {
-  count: (request: DemandsCountRequest) => Promise<DemandsCountResponse>,
-  search: (request: DemandsSearchRequest) => Promise<DemandsSearchResponse>,
+  count: (request: DemandsSearchRequest) => Promise<DemandsCountResponse>,
+  search: (request: DemandsSearchRequest) => Promise<Demand[]>,
   create: (request: Omit<Demand, "date" | "recipient">) => Promise<DemandsCreateResponse>,
   update: (request: Omit<Demand, "recipient">) => Promise<undefined>,
   next: (request: null) => Promise<Demand>
 };
 
-export type Demand = { 
-  date: number, 
-  scenario: string, 
-  recipient: string, 
-  sender: string, 
-  isActive: boolean, 
-  payload: object 
-};
-
-export type DemandsCountRequest = { 
-  my?: boolean;
-};
 export type DemandsCountResponse = { 
   active: number,
   closed: number
@@ -32,6 +22,5 @@ export type DemandsSearchRequest = {
   limit: number,
   offset: number
 };
-export type DemandsSearchResponse = Demand[];
 
 export type DemandsCreateResponse = { date: number };

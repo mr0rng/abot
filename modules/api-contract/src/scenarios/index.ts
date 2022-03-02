@@ -1,14 +1,13 @@
+import { Scenario } from '@abot/model'
+
 export type ApiContractScenarios = {
-  count: (request: ScenariosCountRequest) => Promise<ScenariosCountResponse>,
-  search: (request: ScenariosSearchRequest) => Promise<ScenariosSearchResponse>,
+  count: (request: ScenariosSearchRequest) => Promise<ScenariosCountResponse>,
+  search: (request: ScenariosSearchRequest) => Promise<Scenario[]>,
   create: (request: Scenario) => Promise<undefined>,
   update: (request: Scenario) => Promise<undefined>,
   delete: (request:  ScenariosDeleteRequest) => Promise<undefined>,
 };
 
-export type Scenario = { id: string, description: string, payload: object };
-
-export type ScenariosCountRequest = { };
 export type ScenariosCountResponse = { count: number };
 
 export type ScenariosSearchRequest = { 
@@ -17,7 +16,5 @@ export type ScenariosSearchRequest = {
   limit: number,
   offset: number
 };
-
-export type ScenariosSearchResponse = Scenario[];
 
 export type ScenariosDeleteRequest = { id: string };

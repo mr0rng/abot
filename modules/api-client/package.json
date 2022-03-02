@@ -1,5 +1,5 @@
 {
-  "name": "@abot/api-contract",
+  "name": "@abot/api-client",
   "version": "0.1.0",
   "description": "",
   "main": "target/index.js",
@@ -9,9 +9,12 @@
   "devDependencies": {
     "@abot/ts": "^0.1.0"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@abot/model": "^0.1.0"
-  }
+    "@abot/api-contract": "^0.1.0",
+    "@abot/config": "^0.1.0",
+    "@abot/model": "^0.1.0",
+    "nats": "2.6.1"
+  },
+  "author": "",
+  "license": "ISC"
 }

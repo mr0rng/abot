@@ -26,6 +26,15 @@ class DAO {
     }
   }
 
+  async executeOne <T>(sql: string, params?: any[]): Promise<T> {
+    const { rows } = await this.execute<T>(sql, params);
+    if (rows.length !== 1) {
+      throw new Error(`executeOne: Unexpected number of rows ${rows.length}`);
+    }
+
+    return rows[0];
+  }
+
   async end () {
     await this.pool.end()
   }

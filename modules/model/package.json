@@ -1,17 +1,14 @@
 {
-  "name": "@abot/api-contract",
+  "name": "@abot/model",
   "version": "0.1.0",
   "description": "",
   "main": "target/index.js",
   "scripts": {
     "build": "NODE_ENV=lib ts"
   },
-  "devDependencies": {
+  "dependencies": {
     "@abot/ts": "^0.1.0"
   },
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@abot/model": "^0.1.0"
-  }
+  "license": "ISC"
 }

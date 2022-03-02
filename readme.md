@@ -5,6 +5,7 @@
 ### Requirements
 
 - [docker](https://www.docker.com/)
+- [docker-compose](https://docs.docker.com/compose/)
 - [nodejs](https://nodejs.org/en/) (it's better to install [nvm](https://github.com/nvm-sh/nvm))
 
 ### Init project
@@ -13,9 +14,9 @@
 git clone project
 npm i
 npx lerna bootstrap
+npm run build
 npm run env
 npm run migrate
-npm run build
 ```
 
 Happy dev!
@@ -53,3 +54,4 @@ Build all packages.
 | DB_MAIN           | postgresql://postgres:qwe123@localhost:6432/main |
 | DB_MAIN_POOL_SIZE | 10                                               |
 | NATS              | localhost:6222                                   |
+| API_TIMEOUT       | 5000                                             |

@@ -1,7 +1,9 @@
 CREATE TABLE "Users" (
-  "login"    VARCHAR PRIMARY KEY,
+  "id"       VARCHAR PRIMARY KEY,
+  "login"    VARCHAR NOT NULL,
   "type"     VARCHAR NOT NULL,
   "isAdmin"  BOOLEAN NOT NULL,
+  "isBanned" BOOLEAN NOT NULL,
   "payload"  JSONB   NOT NULL,
-  "isBanned" BOOLEAN NOT NULL
+  UNIQUE ("login", "type")
 );

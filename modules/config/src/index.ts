@@ -9,7 +9,10 @@ export class Config {
       pool_size: parseInt(process.env.DB_MAIN_POOL_SIZE || "10") || 10
     }
   }
-  nats = process.env.NATS || "localhost:6222"
+  nats = {
+    uri: process.env.NATS || "localhost:6222",
+    timeout: parseInt(process.env.API_TIMEOUT || "5000") || 5000
+  }
 }
 
 export default new Config()

@@ -1,28 +1,33 @@
 import { connect, JSONCodec, NatsConnection } from 'nats';
 
 import { Config } from '@abot/config';
+import DAO from '@abot/dao';
 import { ApplicationError, Command } from './commands';
 import commands from './commands/list';
 
 class Application {
   private codec = JSONCodec();
   private connection?: NatsConnection;
+  private dao: DAO;
 
   constructor (
     public config: Config
-  ) { }
-
-  async start () {
-    this.connection = await connect({ servers: this.config.nats });
-    this.connection.closed().then(() => { this.connection = undefined });
-    
-    await Promise.all(commands.map((command) => this.subscribe(command)))
+  ) { 
+    this.dao = new DAO(config);
   }
 
-  async stop () {
+  async start () {
+    this.connection = await connect({ servers: this.config.nats.uri });
+    this.connection.closed().then(() => { this.connection = undefined });
+    
+    await Promise.all(commands.map((command) => { this.subscribe(command) }))
+  }
+
+  async end () {
     if (this.connection == null) {
       throw new Error('Application was not started')
     }
+    this.dao.end();
 
     await this.connection.close();
     this.connection = undefined;
