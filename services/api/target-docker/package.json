@@ -1,0 +1,9 @@
+{
+  "name": "@abot/api",
+  "version": "0.1.0",
+  "dependencies": {
+    "@types/node": "17.0.21",
+    "ajv": "8.10.0",
+    "nats": "2.6.1"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@abot/api",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "ts",
+    "build:docker": "npm run build && docker-node"
+  },
+  "devDependencies": {
+    "@abot/docker-node": "^0.1.0",
+    "@abot/ts": "^0.1.0",
+    "@types/node": "17.0.21"
+  },
+  "dependencies": {
+    "@abot/config": "^0.1.0",
+    "@abot/dao": "^0.1.0",
+    "ajv": "8.10.0",
+    "nats": "2.6.1"
+  },
+  "docker": {
+    "imageName": "abot/api"
+  },
+  "author": "",
+  "license": "ISC"
+}

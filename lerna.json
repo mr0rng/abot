@@ -1,0 +1,9 @@
+{
+  "packages": [
+    "db/*",
+    "dev/*",
+    "modules/*",
+    "services/*"
+  ],
+  "version": "0.0.0"
+}

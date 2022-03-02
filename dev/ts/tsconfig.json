@@ -1,0 +1,11 @@
+{
+  "extends": "@tsconfig/node14/tsconfig.json",
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [ "es2019", "ES6", "ScriptHost"],
+    "downlevelIteration": true
+  },
+  "include": [
+    "../../../src/**/*"
+  ]
+}

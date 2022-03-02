@@ -1,0 +1,28 @@
+{
+  "name": "@abot/dao",
+  "version": "0.1.0",
+  "description": "",
+  "main": "target/index.js",
+  "scripts": {
+    "build": "NODE_ENV=lib ts",
+    "test": "jest --maxConcurrency=1 --maxWorkers=1 --bail"
+  },
+  "devDependencies": {
+    "@abot/ts": "^0.1.0",
+    "@babel/preset-env": "7.16.11",
+    "@babel/preset-typescript": "7.16.7",
+    "@types/jest": "^27.4.1",
+    "@types/node": "17.0.21",
+    "@types/pg": "8.6.4",
+    "jest": "27.5.1"
+  },
+  "dependencies": {
+    "@abot/config": "^0.1.0",
+    "pg": "8.7.3"
+  },
+  "jest": {
+    "testRegex": "(/tests/.*.test)\\.ts$"
+  },
+  "author": "",
+  "license": "ISC"
+}
