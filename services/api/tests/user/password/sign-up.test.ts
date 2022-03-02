@@ -18,11 +18,17 @@ afterAll(async () => {
   await application.end();
   await dao.end();
   await client.end();
-
-  dao = new DAO(config);
-  client = new ApiClient(config);
 });
 
-test("signUp", async () => {
-  const a = client.user.password.signUp({ login: "tstusr", passwordHash: "pwdhash" });
+test("signUp returns 200", async () => {
+  const response = await client.user.password.signUp({ login: "tstusr", passwordHash: "pwdhash" });
+  expect(response.code).toBe(200);
+  expect(response.status).toBe("ok");
+  expect(response.response.session).toBe("asdadas");
+});
+
+test("signUp returns 400", async () => {
+  const response = await client.user.password.signUp({ login: "tstusr" });
+  expect(response.code).toBe(400);
+  expect(response.status).toBe("error");
 });

@@ -25,7 +25,7 @@ export default class APIClient implements ApiContract {
 
   async start () {
     if (this.connection != null) {
-      throw new Error(`Already connected`)
+      throw new Error(`Already connected`);
     }
 
     this.connection = await connect({ servers: this.config.nats.uri });
@@ -47,7 +47,7 @@ export default class APIClient implements ApiContract {
 
     const message = await this.connection.request(
       method,
-      this.codec.encode(JSON.stringify(request))
+      this.codec.encode(request)
     );
 
     return this.codec.decode(message.data) as Response;

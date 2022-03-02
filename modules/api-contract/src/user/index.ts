@@ -1,8 +1,9 @@
 import { ApiContractUserPassword } from './password'
+import { Response } from "../response";
 
 export type ApiContractUser = {
   password: ApiContractUserPassword,
-  get: (request: UserGetRequest) => Promise<UserGetResponse>,
+  get: (request: UserGetRequest) => Promise<Response<UserGetResponse>>,
 };
 
 export type UserGetRequest = { session: string };

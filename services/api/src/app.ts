@@ -37,8 +37,9 @@ class Application {
     if (this.connection == null) {
       throw new Error('Application was not started')
     }
-    
-    const subscribe = this.connection.subscribe(command.path)
+
+    const subscribe = this.connection.subscribe(command.path);
+
     for await (const message of subscribe) {
       try {
         const response = await command.execute(this, this.codec.decode(message.data))

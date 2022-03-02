@@ -1,5 +1,6 @@
 import { MessageSendResponse, MessagesSearchRequest } from "@abot/api-contract/target/messages";
 import { Message } from '@abot/model';
+import { Response } from "@abot/api-contract/src/response";
 
 import APIClient from '.'
 
@@ -8,11 +9,11 @@ export default class APIClientMessages {
     public apiClient: APIClient
   ) { }
 
-  send (message: Omit<Message, "date">): Promise<MessageSendResponse> {
+  send (message: Omit<Message, "date">): Promise<Response<MessageSendResponse>> {
     throw new Error("Method not implemented")
   }
 
-  search (request: MessagesSearchRequest): Promise<Message[]> {
+  search (request: MessagesSearchRequest): Promise<Response<Message[]>> {
     throw new Error("Method not implemented")
   }
 }
