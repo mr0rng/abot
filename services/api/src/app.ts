@@ -30,7 +30,7 @@ class Application {
 
   async end () {
     if (this.connection == null) {
-      throw new Error('Application was not started')
+      throw new Error('Application was not started');
     }
     await this.dao.end();
     await this.sessions.end();
@@ -66,6 +66,13 @@ class Application {
         }
 
         console.error("Unhandled error:", e);
+        message.respond(this.codec.encode({
+          status: 'error',
+          code: 500,
+          message: "Unpredicted error!"
+        }));
+        return;
+
       }
     }
   }
