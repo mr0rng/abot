@@ -21,6 +21,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+    await dao.end();
     await application.end();
     await client.end();
     await sessions.end();
