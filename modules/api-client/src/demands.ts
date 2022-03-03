@@ -2,7 +2,9 @@ import {
   DemandsCountResponse,
   DemandsCreateRequest,
   DemandsCreateResponse,
-  DemandsSearchRequest 
+  DemandsUpdateRequest,
+  DemandsSearchRequest,
+  SessionRequired,
 } from "@abot/api-contract/target/demands";
 import { Demand } from '@abot/model';
 import { Response } from "@abot/api-contract/src/response";
@@ -26,11 +28,19 @@ export default class APIClientDemands {
     return this.apiClient.execute('demands.create', request);
   }
 
-  update (request: Omit<Demand, "recipient">): Promise<Response<undefined>> {
+  update (request: DemandsUpdateRequest): Promise<Response<undefined>> {
     return this.apiClient.execute('demands.update', request);
   }
 
-  next (request: null): Promise<Response<Demand>> {
+  next (request: SessionRequired): Promise<Response<Demand>> {
     return this.apiClient.execute('demands.next', request);
+  }
+
+  close (request: SessionRequired): Promise<Response<undefined>> {
+    return this.apiClient.execute('demands.close', request);
+  }
+
+  getActiveAsSender (request: SessionRequired): Promise<Response<Demand>> {
+    return this.apiClient.execute('demands.getActiveAsSender', request);
   }
 }

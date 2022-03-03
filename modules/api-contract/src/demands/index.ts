@@ -5,8 +5,10 @@ export type ApiContractDemands = {
   count: (request: DemandsSearchRequest) => Promise<Response<DemandsCountResponse>>,
   search: (request: DemandsSearchRequest) => Promise<Response<Demand[]>>,
   create: (request: DemandsCreateRequest) => Promise<Response<DemandsCreateResponse>>,
-  update: (request: Omit<Demand, "recipient">) => Promise<Response<undefined>>,
-  next: (request: null) => Promise<Response<Demand>>
+  update: (request: DemandsUpdateRequest) => Promise<Response<undefined>>,
+  next: (request: SessionRequired) => Promise<Response<Demand>>
+  getActiveAsSender: (request: SessionRequired) => Promise<Response<Demand>>
+  close: (request: SessionRequired) => Promise<undefined>
 };
 
 export type DemandsCountResponse = { 
@@ -24,8 +26,12 @@ export type DemandsSearchRequest = {
   offset: number
 };
 
-export type DemandsCreateRequest = {
-  session: string,
-} & Omit<Demand, "id" | "date" | "recipient" | "sender">;
+export type SessionRequired = { session: string }
+
+export type DemandsCreateRequest = SessionRequired & Omit<Demand, "id" | "date" | "recipient" | "sender">;
 
 export type DemandsCreateResponse = { id: string };
+
+export type DemandsUpdateRequest = SessionRequired & Omit<Demand, "recipient" | "date">;
+
+export {Demand};

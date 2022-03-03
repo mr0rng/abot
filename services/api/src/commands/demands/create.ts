@@ -3,29 +3,23 @@ import { DemandsCreateRequest, DemandsCreateResponse } from '@abot/api-contract/
 import Application from '../../app';
 import {ApplicationError, Command} from '..';
 import DemandsModel, {DemandsWrongScenarioError} from "../../models/demand-model";
+import {ensureUser} from "../utils/checkSession";
 
 
 export default new Command<DemandsCreateRequest, DemandsCreateResponse>(
     "demands.create",
     async (app: Application, request: DemandsCreateRequest): Promise<DemandsCreateResponse> => {
-        const demandsModel = new DemandsModel(app.dao);
-        const user = await app.sessions.get_session(request.session);
+      const demandsModel = new DemandsModel(app.dao);
+      const user = await ensureUser(app, request.session);
 
-        if (user === null) {
-            throw new ApplicationError(403, "Session is wrong.")
+      try {
+        return await demandsModel.create(request.scenario, user.id, request.payload, request.isActive);
+      } catch (e) {
+        if (e instanceof DemandsWrongScenarioError) {
+          throw new ApplicationError(400, "Invalid scenario!");
         }
-
-        try {
-            return await demandsModel.create(request.scenario, user.id, request.payload, request.isActive);
-        } catch (e) {
-            if (e instanceof DemandsWrongScenarioError) {
-                throw new ApplicationError(
-                    400,
-                    "Invalid scenario!",
-                )
-            }
-            throw e;
-        }
+        throw e;
+      }
     },
     {
         type: "object",
