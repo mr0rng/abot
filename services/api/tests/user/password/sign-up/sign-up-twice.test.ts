@@ -24,6 +24,7 @@ afterAll(async () => {
   await application.end();
   await client.end();
   await sessions.end();
+  await dao.end();
 });
 
 describe("User cannot be signedUp twice", () => {
