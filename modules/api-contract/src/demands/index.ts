@@ -4,7 +4,7 @@ import { Response } from "../response";
 export type ApiContractDemands = {
   count: (request: DemandsSearchRequest) => Promise<Response<DemandsCountResponse>>,
   search: (request: DemandsSearchRequest) => Promise<Response<Demand[]>>,
-  create: (request: Omit<Demand, "date" | "recipient">) => Promise<Response<DemandsCreateResponse>>,
+  create: (request: DemandsCreateRequest) => Promise<Response<DemandsCreateResponse>>,
   update: (request: Omit<Demand, "recipient">) => Promise<Response<undefined>>,
   next: (request: null) => Promise<Response<Demand>>
 };
@@ -24,4 +24,8 @@ export type DemandsSearchRequest = {
   offset: number
 };
 
-export type DemandsCreateResponse = { date: number };
+export type DemandsCreateRequest = {
+  session: string,
+} & Omit<Demand, "id" | "date" | "recipient" | "sender">;
+
+export type DemandsCreateResponse = { id: string };

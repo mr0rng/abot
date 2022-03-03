@@ -1,6 +1,7 @@
 import { 
-  DemandsCountResponse, 
-  DemandsCreateResponse, 
+  DemandsCountResponse,
+  DemandsCreateRequest,
+  DemandsCreateResponse,
   DemandsSearchRequest 
 } from "@abot/api-contract/target/demands";
 import { Demand } from '@abot/model';
@@ -14,21 +15,22 @@ export default class APIClientDemands {
   ) { }
 
   count (request: DemandsSearchRequest): Promise<Response<DemandsCountResponse>> {
-    throw new Error("Method not implemented")
+    return this.apiClient.execute('demands.count', request);
   }
 
   search (request: DemandsSearchRequest): Promise<Response<Demand[]>> {
-    throw new Error("Method not implemented")
+    return this.apiClient.execute('demands.search', request);
   }
-  create (request: Omit<Demand, "date" | "recipient">): Promise<Response<DemandsCreateResponse>> {
-    throw new Error("Method not implemented")
+
+  create (request: DemandsCreateRequest): Promise<Response<DemandsCreateResponse>> {
+    return this.apiClient.execute('demands.create', request);
   }
 
   update (request: Omit<Demand, "recipient">): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+    return this.apiClient.execute('demands.update', request);
   }
 
   next (request: null): Promise<Response<Demand>> {
-    throw new Error("Method not implemented")
+    return this.apiClient.execute('demands.next', request);
   }
 }

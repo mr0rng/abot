@@ -2,7 +2,7 @@ import Redis from 'ioredis';
 
 
 class KeyValueDao {
-    private client: Redis;
+    protected client: Redis;
 
     constructor (
         public uri: string
@@ -28,6 +28,10 @@ class KeyValueDao {
 
     async delete(key: string): Promise<undefined> {
         return await this.client.del(key);
+    }
+
+    async clear(): Promise<undefined> {
+        return await this.client.flushdb();
     }
 }
 

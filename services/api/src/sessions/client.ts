@@ -8,7 +8,7 @@ type Session = Omit<User, "passwordHash">;
 
 
 class SessionDao {
-    client: KeyValueDao;
+    protected client: KeyValueDao;
 
     constructor(config: Config) {
         this.client = new KeyValueDao(config.sessions.uri);
@@ -40,4 +40,11 @@ class SessionDao {
 }
 
 
-export { SessionDao, Session };
+class TestSessionDao extends SessionDao {
+    async clear(): Promise<undefined> {
+        return this.client.clear();
+    }
+}
+
+
+export { SessionDao, Session, TestSessionDao };
