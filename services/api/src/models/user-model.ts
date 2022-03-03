@@ -27,6 +27,14 @@ class UserModel {
         }
     };
 
+    async setBanned(id: string, banned: boolean): Promise<undefined> {
+        const result = await this.dao.execute(
+            'UPDATE "Users" SET "isBanned" = $1 WHERE "id" = $2;',
+            [banned, id],
+        );
+        return;
+    };
+
     async getByCredentials(login: string, type: string, passwordHash: string): Promise<Session> {
         try {
             return await this.dao.executeOne(

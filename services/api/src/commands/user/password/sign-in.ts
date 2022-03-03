@@ -11,6 +11,9 @@ export default new Command<PasswordSignUpInRequest, PasswordSignUpInResponse>(
       const userModel = new UserModel(app.dao);
       try {
           const user = await userModel.getByCredentials(request.login, request.type, request.passwordHash);
+          if (user.isBanned) {
+              throw new ApplicationError(403, "User banned!");
+          }
           const session = await app.sessions.create_session(user);
           return { session };
       } catch (e) {
