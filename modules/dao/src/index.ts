@@ -2,6 +2,11 @@ import { Pool, PoolClient, QueryResult } from 'pg'
 
 import { Config } from '@abot/config'
 
+class DAOError extends Error {}
+class UnexpectedNumberOfRows extends DAOError {
+  isUnexpectedNumberOfRows = true;
+}
+
 class DAO {
   private pool: Pool;
 
@@ -29,7 +34,7 @@ class DAO {
   async executeOne <T>(sql: string, params?: any[]): Promise<T> {
     const { rows } = await this.execute<T>(sql, params);
     if (rows.length !== 1) {
-      throw new Error(`executeOne: Unexpected number of rows ${rows.length}`);
+      throw new UnexpectedNumberOfRows(`executeOne: Unexpected number of rows ${rows.length}`);
     }
 
     return rows[0];
@@ -41,3 +46,5 @@ class DAO {
 }
 
 export default DAO;
+
+export {UnexpectedNumberOfRows};

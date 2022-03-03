@@ -1,0 +1,26 @@
+{
+  "name": "@abot/key-value-client",
+  "version": "0.1.0",
+  "description": "",
+  "main": "target/index.js",
+  "scripts": {
+    "build": "NODE_ENV=lib ts",
+    "test": "jest --maxConcurrency=1 --maxWorkers=1 --bail"
+  },
+  "devDependencies": {
+    "@abot/ts": "^0.1.0",
+    "@babel/preset-env": "7.16.11",
+    "@babel/preset-typescript": "7.16.7",
+    "@types/node": "17.0.21",
+    "jest": "27.5.1"
+  },
+  "dependencies": {
+    "@abot/config": "^0.1.0",
+    "ioredis": "^4.28.5"
+  },
+  "jest": {
+    "testRegex": "(/tests/.*.test)\\.ts$"
+  },
+  "author": "",
+  "license": "ISC"
+}

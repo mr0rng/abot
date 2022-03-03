@@ -5,15 +5,17 @@ import { migrate } from "postgres-migrations";
 import pg from "pg";
 
 (async () => {
-  const client = new pg.Client(config.databases.main.uri);
-  await client.connect()
+  let client = undefined;
 
   try {
+    client = new pg.Client(config.databases.main.uri);
+    await client.connect();
+    console.log("db/main: Start migrations");
     await migrate({ client }, path.join(process.cwd(), "migrations"));
-    console.log("db/main: All migrations applied")
-  } catch(e) {
-    console.error("db/main:", e);
+    console.log("db/main: All migrations applied");
   } finally {
-    await client.end()
+    if (client) {
+      await client.end();
+    }
   }
 })();
