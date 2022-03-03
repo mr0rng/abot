@@ -1,18 +1,13 @@
-import DAO, {UnexpectedNumberOfRows, DAOError} from '@abot/dao';
+import {UnexpectedNumberOfRows, DAOError} from '@abot/dao';
 import { v4 } from 'uuid';
 import { Session } from "../sessions/client";
+import BaseModel from "./base-model";
 
 class UserModelError extends Error {}
 class UserExists extends UserModelError {}
 class UserNotFound extends UserModelError {}
 
-class UserModel {
-    private dao: DAO;
-
-    constructor(dao: DAO) {
-        this.dao = dao;
-    }
-
+export default class UserModel extends BaseModel {
     async create(login: string, type: string, passwordHash: string): Promise<Session> {
         try {
             return await this.dao.executeOne(
@@ -51,6 +46,4 @@ class UserModel {
     }
 }
 
-
-export default UserModel;
 export {UserExists, UserNotFound};

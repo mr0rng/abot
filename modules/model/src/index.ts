@@ -15,8 +15,9 @@ export type Scenario = {
   payload: object,
 };
 
-export type Demand = { 
-  date: number, 
+export type Demand = {
+  id: string,
+  date: string,
   scenario: string, 
   recipient: string, 
   sender: string, 

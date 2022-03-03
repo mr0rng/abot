@@ -47,4 +47,4 @@ class DAO {
 
 export default DAO;
 
-export {UnexpectedNumberOfRows};
+export {UnexpectedNumberOfRows, DAOError};
