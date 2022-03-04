@@ -20,6 +20,7 @@ class Application {
   }
 
   async start () {
+    const a = {};
     this.connection = await connect({ servers: this.config.nats.uri });
     this.connection.closed().then(() => { this.connection = undefined });
 
