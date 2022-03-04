@@ -10,11 +10,22 @@
     "migrate": "lerna run migrate",
     "test": "lerna run test",
     "build": "lerna run build",
-    "build:docker": "lerna run build:docker"
+    "build:docker": "lerna run build:docker",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "lerna": "^4.0.0"
-  }
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "5.13.0",
+    "@typescript-eslint/parser": "5.13.0",
+    "eslint": "8.10.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-airbnb-typescript": "16.1.0",
+    "lerna": "4.0.0",
+    "pre-commit": "^1.2.2",
+    "typescript": "4.5.5"
+  },
+  "pre-commit": [
+    "lint"
+  ]
 }

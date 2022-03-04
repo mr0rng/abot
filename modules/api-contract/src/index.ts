@@ -10,4 +10,4 @@ export default interface ApiContract {
   scenarios: ApiContractScenarios,
   user: ApiContractUser,
   users: ApiContractUsers,
-};
+}

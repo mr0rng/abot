@@ -8,7 +8,7 @@ export default new Command<UserGetRequest, UserGetResponse>(
   "user.get",
   async (app: Application, request: UserGetRequest): Promise<UserGetResponse> => {
       const user = await app.sessions.get_session(request.session);
-      if (user == null) {
+      if (user === null || user.isBanned) {
           throw new ApplicationError(404, "Session not found");
       }
       return {

@@ -15,30 +15,30 @@ export default class APIClientUsers {
   ) { }
 
   count (request: UsersSearchRequest): Promise<Response<UsersCountResponse>> {
-    throw new Error("Method not implemented")
+    throw new Error(`Method not implemented: ${request}`)
   }
 
   search (request: UsersSearchRequest): Promise<Response<UsersSearchResponse>> {
-    throw new Error("Method not implemented")
+    throw new Error(`Method not implemented: ${request}`)
   }
 
   ban (request:  UsersRequest): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+    throw new Error(`Method not implemented: ${request}`)
   }
 
   setIsAdmin (request:  UsersRequest): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+    throw new Error(`Method not implemented: ${request}`)
   }
 
   setNotAdmin (request:  UsersRequest): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+    throw new Error(`Method not implemented: ${request}`)
   }
 
   assignScenario (request: UsersScenarioRequest): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+    throw new Error(`Method not implemented: ${request}`)
   }
 
   unassignScenario (request: UsersScenarioRequest): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+    throw new Error(`Method not implemented: ${request}`)
   }
 }

@@ -10,10 +10,10 @@ export default class APIClientMessages {
   ) { }
 
   send (message: Omit<Message, "date">): Promise<Response<MessageSendResponse>> {
-    throw new Error("Method not implemented")
+    throw new Error(`Method not implemented: ${message}`)
   }
 
   search (request: MessagesSearchRequest): Promise<Response<Message[]>> {
-    throw new Error("Method not implemented")
+    throw new Error(`Method not implemented: ${request}`)
   }
 }

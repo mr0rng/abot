@@ -15,8 +15,8 @@ export const scenariosSearchEnv = <T extends ScenariosSearchRequest>(
   isCount,
   fields,
   schema,
-  sql: (params: any[], request: ScenariosSearchRequest): string => {
-    const expressions = processQuery(`("id" || "description")`, params, request.q || '');
+  sql: (params: unknown[], request: ScenariosSearchRequest): string => {
+    const expressions = processQuery(`("id" || ' ' || "description")`, params, request.q || '');
     
     // id
     if (request.id != null) {

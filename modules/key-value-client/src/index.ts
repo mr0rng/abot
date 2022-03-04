@@ -2,13 +2,11 @@ import Redis from 'ioredis';
 
 
 class KeyValueDao {
-    private client?: Redis;
+  private client?: Redis;
 
-    constructor (
+    constructor(
         public uri: string
-    ) {
-        
-    }
+    ) { }
 
     async connect(): Promise<void> {
         this.client = new Redis(this.uri);
@@ -42,8 +40,12 @@ class KeyValueDao {
         if (this.client == null) {
             throw new Error('Not connected');
         }
-        
+
         return await this.client.del(key);
+    }
+
+    async clear(): Promise<undefined> {
+        return await this.client.flushdb();
     }
 }
 

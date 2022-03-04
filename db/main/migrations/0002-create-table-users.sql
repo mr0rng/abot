@@ -8,3 +8,5 @@ CREATE TABLE "Users" (
   "payload"  JSONB   NOT NULL,
   UNIQUE ("login", "type")
 );
+
+CREATE INDEX "idx_Users_FTS" ON "Users" USING GIN ("login" gin_trgm_ops);

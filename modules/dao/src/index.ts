@@ -19,7 +19,7 @@ class DAO {
     });
   }
 
-  async execute <T>(sql: string, params?: any[]): Promise<QueryResult<T>> {
+  async execute <T>(sql: string, params?: unknown[]): Promise<QueryResult<T>> {
     let client: PoolClient | undefined;
     try {
       client = await this.pool.connect();
@@ -31,7 +31,7 @@ class DAO {
     }
   }
 
-  async executeOne <T>(sql: string, params?: any[]): Promise<T> {
+  async executeOne <T>(sql: string, params?: unknown[]): Promise<T> {
     const { rows } = await this.execute<T>(sql, params);
     if (rows.length !== 1) {
       throw new UnexpectedNumberOfRows(`executeOne: Unexpected number of rows ${rows.length}`);
@@ -47,4 +47,4 @@ class DAO {
 
 export default DAO;
 
-export {UnexpectedNumberOfRows};
+export {UnexpectedNumberOfRows, DAOError};

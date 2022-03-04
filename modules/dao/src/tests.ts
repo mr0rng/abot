@@ -1,15 +1,16 @@
-import { User, Scenario, Demand, Message } from '@abot/model'
+import { User, Scenario, Demand, Message, Decline } from '@abot/model'
 import DAO from '.';
 
 export default class TestsDAO extends DAO {
   async clear () {
     await this.execute(`
       WITH
-        messages AS (DELETE FROM "Messages" RETURNING date),
-        demands AS (DELETE FROM "Demands" RETURNING date),
+        "messages" AS (DELETE FROM "Messages" RETURNING date),
+        "demands" AS (DELETE FROM "Demands" RETURNING date),
         "usersScenarios" AS (DELETE FROM "UsersScenarios" RETURNING user),
-        scenarios AS (DELETE FROM "Scenarios" RETURNING id),
-        users AS (DELETE FROM "Users" RETURNING login)
+        "scenarios" AS (DELETE FROM "Scenarios" RETURNING id),
+        "users" AS (DELETE FROM "Users" RETURNING login),
+        "declines" AS (DELETE FROM "Declines" RETURNING "sender")
       SELECT 1
     `);
   }
@@ -42,6 +43,7 @@ export type DBData = {
   UsersScenarios?: UserScenario[],
   Demands?: Demand[],
   Messages?: Message[],
+  Declines?: Decline[],
 };
 
 export type DBDataMapCallback<T> = (item: T) => T;
@@ -52,4 +54,5 @@ export type DBDataMap = {
   userScenario?: DBDataMapCallback<UserScenario>,
   demands?: DBDataMapCallback<Demand>,
   messages?: DBDataMapCallback<Message>,
+  declines?: DBDataMapCallback<Decline>,
 };

@@ -9,7 +9,7 @@ export const createCallback = <Request, Response>(env: SearchEnv<Request>) => as
   { dao }: SearchApp, 
   request: Request
 ): Promise<Response> => {
-  const params: any[] = [];
+  const params: unknown[] = [];
   const searchRequest = request as unknown as SearchRequest;
 
   const { rows } = await dao.execute<Response>(
@@ -43,11 +43,11 @@ export interface SearchEnv<Request> {
   tableName: string,
   isCount: boolean,
   fields: string,
-  sql: (params: any[], request: Request) => string,
+  sql: (params: unknown[], request: Request) => string,
   schema: JSONSchemaType<Request>,
 }
 
-export const processQuery = (sql: string, params: any[], q: string): string[] => {
+export const processQuery = (sql: string, params: unknown[], q: string): string[] => {
   const tokens = new Set();
   const result: string[] = [];
 
