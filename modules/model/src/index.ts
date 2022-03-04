@@ -31,3 +31,12 @@ export type Message = {
   type: string, 
   payload: string 
 };
+
+export type SearchRequest = {
+  limit: number,
+  offset: number
+}
+
+export type WithSession = {
+  session: string
+}

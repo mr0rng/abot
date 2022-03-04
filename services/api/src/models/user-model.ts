@@ -1,4 +1,4 @@
-import DAO, {UnexpectedNumberOfRows, DAOError} from '@abot/dao';
+import DAO, {UnexpectedNumberOfRows} from '@abot/dao';
 import { v4 } from 'uuid';
 import { Session } from "../sessions/client";
 
@@ -19,11 +19,11 @@ class UserModel {
                 'INSERT INTO "Users" ("id", "login", "type", "payload", "passwordHash") VALUES ($1, $2, $3, $4, $5) RETURNING "id", "login", "type", "isAdmin", "isBanned", "payload";',
                 [v4(), login, type, {}, passwordHash]
             ) as Session;
-        } catch (e) {
-            if (e.constraint === 'Users_login_type_key') {
-                throw new UserExists("User already exists");
-            }
-            throw e;
+        } catch (error) {
+            const e = error as { constraint: string };
+            throw e && typeof e === 'object' && e['constraint'] === 'Users_login_type_key' 
+                ? new UserExists("User already exists") 
+                : e;
         }
     };
 

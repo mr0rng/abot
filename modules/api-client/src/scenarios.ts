@@ -1,5 +1,9 @@
-import { ScenariosCountResponse, ScenariosDeleteRequest, ScenariosSearchRequest } from "@abot/api-contract/target/scenarios";
-import { Scenario } from '@abot/model';
+import { 
+  ScenariosCountResponse, 
+  ScenariosDeleteRequest, 
+  ScenariosSearchRequest 
+} from "@abot/api-contract/target/scenarios";
+import { Scenario, SearchRequest } from '@abot/model';
 import { Response } from "@abot/api-contract/src/response";
 
 import APIClient from '.'
@@ -10,22 +14,22 @@ export default class APIClientScenarios {
   ) { }
 
   count (request: ScenariosSearchRequest): Promise<Response<ScenariosCountResponse>> {
-    throw new Error("Method not implemented")
+    return this.apiClient.execute('scenarios.count', request);
   }
 
-  search (request: ScenariosSearchRequest): Promise<Response<Scenario[]>> {
-    throw new Error("Method not implemented")
+  search (request: ScenariosSearchRequest & SearchRequest): Promise<Response<Scenario[]>> {
+    return this.apiClient.execute('scenarios.search', request);
   }
 
   create (request: Scenario): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+    return this.apiClient.execute('scenarios.create', request);
   }
   
   update (request: Scenario): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+    return this.apiClient.execute('scenarios.update', request);
   }
   
   delete (request:  ScenariosDeleteRequest): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+    return this.apiClient.execute('scenarios.delete', request);
   }
 }
