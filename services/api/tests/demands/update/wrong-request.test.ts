@@ -2,12 +2,15 @@ import config from '@abot/config';
 import ApiClient from '@abot/api-client';
 import { SessionDao } from "../../../src/sessions/client";
 import Application from '../../../src/app';
+import DemandModel from "../../../src/models/demand-model";
 import DAO from "@abot/dao/target/tests";
+import {v4} from 'uuid';
 
 let application = new Application(config);
 let dao = new DAO(config);
 let client = new ApiClient(config);
 let sessions = new SessionDao(config);
+let demandModel = new DemandModel(dao);
 
 beforeAll(async () => {
     await application.start();
@@ -23,12 +26,21 @@ afterAll(async () => {
     await dao.end();
 });
 
-describe("create demand wrong format", () => {
+describe("Update demand should decline wrong request", () => {
     let session_key;
     let response;
 
-    const session = {
-        id: "user_id",
+    const nonAdminSession = {
+        id: v4(),
+        login: "admin_user_login",
+        type: "user_type",
+        isAdmin: false,
+        isBanned: false,
+        payload: {}
+    };
+
+    const userSession = {
+        id: v4(),
         login: "user_login",
         type: "user_type",
         isAdmin: false,
@@ -36,9 +48,14 @@ describe("create demand wrong format", () => {
         payload: {}
     };
 
+    const nonAdminUser = {
+        passwordHash: "user_pass_hash",
+        ...nonAdminSession,
+    }
+
     const user = {
         passwordHash: "user_pass_hash",
-        ...session,
+        ...userSession,
     }
 
     const scenario = {
@@ -48,29 +65,47 @@ describe("create demand wrong format", () => {
         "payload": {},
     }
 
+    const demand = {
+        id: v4(),
+        date: new Date(Date.now()).toISOString(),
+        scenario: scenario.id,
+        recipient: user.id,
+        sender: null,
+        isActive: true,
+        payload: {}
+    }
+
+    let request;
+
     beforeAll(async () => {
 
         await dao.prepareDB(
             {
                 "Users": [
                     user,
+                    nonAdminUser,
+                ],
+                "Scenarios": [
+                    scenario,
+                ],
+                "Demands": [
+                    demand,
                 ],
             }
         )
-        session_key = await sessions.create_session(session);
+        session_key = await sessions.create_session(nonAdminUser);
 
-        response = await client.demands.create(
-            {
-                session: session_key,
-                scenario: scenario.id,
-                isActive: true,
-                payload: {},
-            }
-        );
+        request = {
+            id: demand.id,
+            date: 123,
+            session: session_key,
+            payload: {a: 42},
+        };
+
+        response = await client.demands.update(request);
     });
 
     test("response code correct", () => expect(response.code).toBe(400));
     test("response status correct", () => expect(response.status).toBe("error"));
-    test("response message correct", () => expect(response.message).toBe("Invalid scenario!"));
 
 });

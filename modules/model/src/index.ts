@@ -32,3 +32,8 @@ export type Message = {
   type: string, 
   payload: string 
 };
+
+export type Decline = {
+  sender: string,
+  demand: string,
+}
