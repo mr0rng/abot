@@ -1,31 +1,33 @@
-import { ScenariosCountResponse, ScenariosDeleteRequest, ScenariosSearchRequest } from "@abot/api-contract/target/scenarios";
-import { Scenario } from '@abot/model';
-import { Response } from "@abot/api-contract/src/response";
+import {
+  ApiContractScenarios,
+  ScenariosCountResponse,
+  ScenariosDeleteRequest,
+  ScenariosSearchRequest,
+} from '@abot/api-contract/target/scenarios';
+import { Scenario, SearchRequest, WithSession } from '@abot/model';
 
-import APIClient from '.'
+import APIClient from '.';
 
-export default class APIClientScenarios {
-  constructor (
-    public apiClient: APIClient
-  ) { }
+export default class APIClientScenarios implements ApiContractScenarios {
+  constructor(public apiClient: APIClient) {}
 
-  count (request: ScenariosSearchRequest): Promise<Response<ScenariosCountResponse>> {
-    throw new Error("Method not implemented")
+  count(request: ScenariosSearchRequest): Promise<ScenariosCountResponse> {
+    return this.apiClient.execute('scenarios.count', request);
   }
 
-  search (request: ScenariosSearchRequest): Promise<Response<Scenario[]>> {
-    throw new Error("Method not implemented")
+  search(request: ScenariosSearchRequest & SearchRequest): Promise<Scenario[]> {
+    return this.apiClient.execute('scenarios.search', request);
   }
 
-  create (request: Scenario): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+  create(request: Omit<Scenario, 'isDeleted'> & WithSession): Promise<void> {
+    return this.apiClient.execute('scenarios.create', request);
   }
-  
-  update (request: Scenario): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+
+  update(request: Omit<Scenario, 'isDeleted'> & WithSession): Promise<void> {
+    return this.apiClient.execute('scenarios.update', request);
   }
-  
-  delete (request:  ScenariosDeleteRequest): Promise<Response<undefined>> {
-    throw new Error("Method not implemented")
+
+  delete(request: ScenariosDeleteRequest): Promise<void> {
+    return this.apiClient.execute('scenarios.delete', request);
   }
 }

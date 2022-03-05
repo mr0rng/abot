@@ -1,27 +1,24 @@
-import { SessionRequired, Demand } from '@abot/api-contract/target/demands'
+import { WithSession } from '@abot/model';
 
+import { Command } from '..';
 import Application from '../../app';
-import {ApplicationError, Command} from '..';
-import DemandsModel, {DemandNotFoundError} from "../../models/demand-model";
-import {ensureUser} from "../utils/checkSession";
+import DemandsModel from '../../models/demand-model';
 
-
-export default new Command<SessionRequired, undefined>(
-  "demands.close",
-  async (app: Application, request: SessionRequired): Promise<undefined> => {
+export default new Command<WithSession, void>(
+  'demands.close',
+  async (app: Application, request: WithSession): Promise<void> => {
     const demandsModel = new DemandsModel(app.dao);
 
     const user = await ensureUser(app, request.session);
 
     await demandsModel.close(user.id);
-    return;
   },
   {
-    type: "object",
+    type: 'object',
     properties: {
-      session: {type: "string"},
+      session: { type: 'string' },
     },
-    required: ["session"],
-    additionalProperties: false
-  }
-)
+    required: ['session'],
+    additionalProperties: false,
+  },
+);

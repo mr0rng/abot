@@ -1,33 +1,49 @@
-import { PasswordSignUpInRequest, PasswordSignUpInResponse } from '@abot/api-contract/target/user/password'
+import { v4 } from 'uuid';
 
-import Application from '../../../app';
+import { PasswordSignUpInRequest, PasswordSignUpInResponse } from '@abot/api-contract/target/user/password';
+
 import { ApplicationError, Command } from '../..';
-import UserModel, {UserExists} from "../../../models/user-model";
-
+import Application from '../../../app';
 
 export default new Command<PasswordSignUpInRequest, PasswordSignUpInResponse>(
-  "user.password.signUp",
-  async (app: Application, request: PasswordSignUpInRequest): Promise<PasswordSignUpInResponse> => {
-    const userModel = new UserModel(app.dao);
+  'user.password.signUp',
+  async (
+    { dao, sessions }: Application,
+    { login, passwordHash }: PasswordSignUpInRequest,
+  ): Promise<PasswordSignUpInResponse> => {
     try {
-        const user = await userModel.create(request.login, request.type, request.passwordHash);
-        const session = await app.sessions.create_session(user);
-        return { session };
-    } catch (e) {
-        if (e instanceof UserExists) {
-            throw new ApplicationError(409, "user already exists");
-        }
-        throw e;
+      const { id } = await dao.executeOne(
+        `
+          INSERT INTO "Users" ("id", "login", "type", "payload") 
+          VALUES ($1, $2, $3, $4) 
+          RETURNING "id"
+        `,
+        [v4(), login, 'web', JSON.stringify({ privateKeys: { passwordHash } })],
+      );
+      const session = await sessions.create({
+        id,
+        login,
+        type: 'web',
+        isAdmin: false,
+        isBanned: false,
+        payload: { privateKeys: { passwordHash } },
+      });
+
+      return { session };
+    } catch (error) {
+      const e = error as { constraint: string };
+      throw e && typeof e === 'object' && e['constraint'] === 'Users_login_type_key'
+        ? new ApplicationError(400, 'User already exists')
+        : e;
     }
   },
   {
-    type: "object",
+    type: 'object',
     properties: {
-      type: {type: "string"},
-      login: {type: "string"},
-      passwordHash: {type: "string"},
+      login: { type: 'string' },
+      passwordHash: { type: 'string' },
     },
-    required: ["login", "passwordHash", "type"],
-    additionalProperties: false
-  }
+    required: ['login', 'passwordHash'],
+    additionalProperties: false,
+  },
 );

@@ -1,39 +1,49 @@
 import Redis from 'ioredis';
 
-
 class KeyValueDao {
-    protected client: Redis;
+  private client?: Redis;
 
-    constructor (
-        public uri: string
-    ) {
-        this.client = new Redis(uri);
+  constructor(public uri: string) {}
+
+  async connect(): Promise<void> {
+    this.client = new Redis(this.uri);
+  }
+
+  async disconnect(): Promise<undefined> {
+    if (this.client == null) {
+      throw new Error('Not connected');
     }
 
-    async connect(): Promise<undefined> {
-        return undefined;
+    return this.client.disconnect();
+  }
+
+  async set(key: string, value: string): Promise<undefined> {
+    if (this.client == null) {
+      throw new Error('Not connected');
     }
 
-    async disconnect(): Promise<undefined> {
-        return await this.client.disconnect();
+    return this.client.set(key, value);
+  }
+
+  async get(key: string): Promise<string | undefined> {
+    if (this.client == null) {
+      throw new Error('Not connected');
     }
 
-    async set(key: string, value: string): Promise<undefined> {
-        return await this.client.set(key, value);
+    return this.client.get(key);
+  }
+
+  async delete(key: string): Promise<void> {
+    if (this.client == null) {
+      throw new Error('Not connected');
     }
 
-    async get(key: string): Promise<string> {
-        return await this.client.get(key);
-    }
+    return this.client.del(key);
+  }
 
-    async delete(key: string): Promise<undefined> {
-        return await this.client.del(key);
-    }
-
-    async clear(): Promise<undefined> {
-        return await this.client.flushdb();
-    }
+  async clear(): Promise<undefined> {
+    return this.client.flushdb();
+  }
 }
-
 
 export default KeyValueDao;

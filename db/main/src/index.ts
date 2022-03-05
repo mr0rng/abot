@@ -1,18 +1,20 @@
 import path from 'path';
+import pg, { Client } from 'pg';
+import { migrate } from 'postgres-migrations';
 
 import config from '@abot/config';
-import { migrate } from "postgres-migrations";
-import pg from "pg";
 
 (async () => {
-  let client = undefined;
+  let client: Client | undefined = undefined;
 
   try {
     client = new pg.Client(config.databases.main.uri);
     await client.connect();
-    console.log("db/main: Start migrations");
-    await migrate({ client }, path.join(process.cwd(), "migrations"));
-    console.log("db/main: All migrations applied");
+    // eslint-disable-next-line no-console
+    console.log('db/main: Start migrations');
+    await migrate({ client }, path.join(process.cwd(), 'migrations'));
+    // eslint-disable-next-line no-console
+    console.log('db/main: All migrations applied');
   } finally {
     if (client) {
       await client.end();

@@ -1,21 +1,13 @@
-import { Scenario } from '@abot/model'
-import { Response } from "../response";
+import { Scenario, SearchRequest, WithSession } from '@abot/model';
 
-export type ApiContractScenarios = {
-  count: (request: ScenariosSearchRequest) => Promise<Response<ScenariosCountResponse>>,
-  search: (request: ScenariosSearchRequest) => Promise<Response<Scenario[]>>,
-  create: (request: Scenario) => Promise<Response<undefined>>,
-  update: (request: Scenario) => Promise<Response<undefined>>,
-  delete: (request:  ScenariosDeleteRequest) => Promise<Response<undefined>>,
-};
+export interface ApiContractScenarios {
+  count: (request: ScenariosSearchRequest) => Promise<ScenariosCountResponse>;
+  search: (request: ScenariosSearchRequest & SearchRequest) => Promise<Scenario[]>;
+  create: (request: Omit<Scenario, 'isDeleted'> & WithSession) => Promise<void>;
+  update: (request: Omit<Scenario, 'isDeleted'> & WithSession) => Promise<void>;
+  delete: (request: ScenariosDeleteRequest) => Promise<void>;
+}
 
 export type ScenariosCountResponse = { count: number };
-
-export type ScenariosSearchRequest = { 
-  q: string,
-  id?: string,
-  limit: number,
-  offset: number
-};
-
-export type ScenariosDeleteRequest = { id: string };
+export type ScenariosSearchRequest = { session: string; q?: string; id?: string };
+export type ScenariosDeleteRequest = { session: string; id: string };

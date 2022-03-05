@@ -1,7 +1,7 @@
-import { connect, JSONCodec, NatsConnection } from "nats";
+import { JSONCodec, NatsConnection, connect } from 'nats';
 
+import ApiContract, { Response, ResponseError, ResponseOk } from '@abot/api-contract';
 import { Config } from '@abot/config';
-import ApiContract from '@abot/api-contract';
 
 import APIClientDemands from './demands';
 import APIClientMessages from './messages';
@@ -19,11 +19,9 @@ export default class APIClient implements ApiContract {
   public user = new APIClientUser(this);
   public users = new APIClientUsers(this);
 
-  constructor (
-    public config: Config
-  ) { }
+  constructor(public config: Config) {}
 
-  async start () {
+  async start() {
     if (this.connection != null) {
       throw new Error(`Already connected`);
     }
@@ -31,25 +29,37 @@ export default class APIClient implements ApiContract {
     this.connection = await connect({ servers: this.config.nats.uri });
   }
 
-  async end () {
+  async end() {
     if (this.connection == null) {
-      throw new Error(`Not connected`)
+      throw new Error(`Not connected`);
     }
 
     await this.connection.close();
     this.connection = undefined;
   }
 
-  async execute<Request, Response> (method: string, request: Request): Promise<Response> {
+  async execute<Request, T>(method: string, request: Request): Promise<T> {
     if (this.connection == null) {
       throw new Error(`Not connected`);
     }
 
-    const message = await this.connection.request(
-      method,
-      this.codec.encode(request)
-    );
+    const message = await this.connection.request(method, this.codec.encode(request));
+    const response = this.codec.decode(message.data) as Response<T>;
 
-    return this.codec.decode(message.data) as Response;
+    if (response.code !== 200) {
+      throw new APIError(response.code, (response as ResponseError).message);
+    }
+
+    return (response as ResponseOk<T>).response;
+  }
+}
+
+export class APIError extends Error {
+  public code: number;
+
+  constructor(code: number, message: string) {
+    super(message);
+
+    this.code = code;
   }
 }

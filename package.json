@@ -10,11 +10,23 @@
     "migrate": "lerna run migrate",
     "test": "lerna run test",
     "build": "lerna run build",
-    "build:docker": "lerna run build:docker"
+    "build:docker": "lerna run build:docker",
+    "lint": "eslint . --ext .ts,.tsx",
+    "prettify": "eslint . --ext .ts,.tsx --fix"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "lerna": "^4.0.0"
-  }
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^3.2.0",
+    "@typescript-eslint/eslint-plugin": "^5.13.0",
+    "@typescript-eslint/parser": "^5.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.3",
+    "lerna": "^4.0.0",
+    "pre-commit": "^1.2.2"
+  },
+  "pre-commit": [
+    "prettify"
+  ]
 }
