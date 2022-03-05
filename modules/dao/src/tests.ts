@@ -1,8 +1,9 @@
-import { User, Scenario, Demand, Message, Decline } from '@abot/model'
+import { Decline, Demand, Message, Scenario, User } from '@abot/model';
+
 import DAO from '.';
 
 export default class TestsDAO extends DAO {
-  async clear () {
+  async clear() {
     await this.execute(`
       WITH
         "messages" AS (DELETE FROM "Messages" RETURNING date),
@@ -15,44 +16,33 @@ export default class TestsDAO extends DAO {
     `);
   }
 
-  async prepareDB (data: DBData) {
+  async prepareDB(data: DBData) {
     for (const key in data) {
       const tableName = key as keyof DBData;
       await this.execute(
         `INSERT INTO "${tableName}" SELECT * FROM json_populate_recordset(null::"${tableName}", $1::JSON)`,
-        [ JSON.stringify(data[tableName]) ]
+        [JSON.stringify(data[tableName])],
       );
     }
   }
 
-  async tableData<T extends keyof DBData>(tableName: T, order: string): Promise<DBData[T]> {
-    const { rows } = await this.execute(`SELECT * FROM "${tableName}" ORDER BY ${order}`);
+  async tableData<T extends keyof DBData>(tableName: T, order?: string): Promise<DBData[T]> {
+    const { rows } = await this.execute(`SELECT * FROM "${tableName}" ${order ? ` ORDER BY ${order}` : ''}`);
 
     return rows as unknown as DBData[T];
   }
 }
 
 export type UserScenario = {
-  user: string,
-  scenario: string,
+  user: string;
+  scenario: string;
 };
 
 export type DBData = {
-  Users?: User[],
-  Scenarios?: Scenario[],
-  UsersScenarios?: UserScenario[],
-  Demands?: Demand[],
-  Messages?: Message[],
-  Declines?: Decline[],
-};
-
-export type DBDataMapCallback<T> = (item: T) => T;
-
-export type DBDataMap = {
-  users?: DBDataMapCallback<User>,
-  scenarios?: DBDataMapCallback<Scenario>,
-  userScenario?: DBDataMapCallback<UserScenario>,
-  demands?: DBDataMapCallback<Demand>,
-  messages?: DBDataMapCallback<Message>,
-  declines?: DBDataMapCallback<Decline>,
+  Users?: User[];
+  Scenarios?: Scenario[];
+  UsersScenarios?: UserScenario[];
+  Demands?: Demand[];
+  Messages?: Message[];
+  Declines?: Decline[];
 };

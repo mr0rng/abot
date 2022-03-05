@@ -1,77 +1,61 @@
-import {UnexpectedNumberOfRows} from '@abot/dao';
-import BaseModel from "./base-model";
-import {Demand} from "@abot/model";
 import { v4 } from 'uuid';
+
+import { UnexpectedNumberOfRows } from '@abot/dao';
+import { Demand } from '@abot/model';
+
+import BaseModel from './base-model';
 
 class DemandsModelError extends Error {}
 class DemandsWrongScenarioError extends DemandsModelError {}
 class DemandNotFoundError extends DemandsModelError {}
 
-
 type UpdateOptions = {
-    scenario? : string,
-    sender? : string,
-    isActive? : string,
-    payload? : string,
-}
+  scenario?: string;
+  sender?: string;
+  isActive?: string;
+  payload?: string;
+};
 
 export default class DemandsModel extends BaseModel {
-    async get(id: string): Promise<Demand> {
-        return await this.dao.executeOne(
-            'SELECT * FROM "Demands" WHERE "id"=$1;',
-            [id],
-        ) as Demand;
+  async get(id: string): Promise<Demand> {
+    return (await this.dao.executeOne('SELECT * FROM "Demands" WHERE "id"=$1;', [id])) as Demand;
+  }
+
+  async create(scenario: string, recipient: string, payload: object, isActive: boolean): Promise<{ id: string }> {
+    try {
+      return this.dao.executeOne(
+        'INSERT INTO "Demands" ("id", "date", "scenario", "recipient", "payload", "isActive") VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, $5) RETURNING "id";',
+        [v4(), scenario, recipient, payload, isActive],
+      );
+    } catch (e) {
+      if (e.constraint === 'Demands_scenario_fkey') {
+        throw new DemandsWrongScenarioError();
+      }
     }
+  }
 
-    async create(scenario: string, recipient: string, payload: object, isActive: boolean): Promise<{id: string}> {
-        try {
-            return await this.dao.executeOne(
-                'INSERT INTO "Demands" ("id", "date", "scenario", "recipient", "payload", "isActive") VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, $5) RETURNING "id";',
-                [v4(), scenario, recipient, payload, isActive]
-            )
-        } catch (e) {
-            if (e.constraint === 'Demands_scenario_fkey') {
-                throw new DemandsWrongScenarioError();
-            }
-        }
+  async update(id: string, options: UpdateOptions): Promise<Demand> {
+    const params: unknown[] = [];
+
+    const set_string = Object.keys(options)
+      .map((field_name) => {
+        params.push(options[field_name]);
+        return `"${field_name}" = $${params.length}`;
+      })
+      .join(', ');
+
+    params.push(id);
+
+    const sql = `UPDATE "Demands" SET ${set_string} WHERE "id" = $${params.length};`;
+    const result = await this.dao.execute(sql, params);
+
+    if (result.rowCount == 0) {
+      throw new DemandNotFoundError();
     }
+  }
 
-    async update(id: string, options: UpdateOptions): Promise<Demand> {
-        const params: unknown[] = [];
-
-        const set_string = Object.keys(options).map((field_name) => {
-            params.push(options[field_name]);
-            return `"${field_name}" = $${params.length}`;
-        }).join(", ");
-
-        params.push(id);
-
-        const sql = `UPDATE "Demands" SET ${set_string} WHERE "id" = $${params.length};`;
-        const result = await this.dao.execute(sql, params);
-
-        if (result.rowCount == 0) {
-            throw new DemandNotFoundError();
-        }
-        return;
-    }
-
-    async getActiveAsSender(sender: string): Promise<Demand> {
-        try {
-            return await this.dao.executeOne(
-              `SELECT * FROM "Demands" WHERE "sender" = $1 AND "isActive" AND "sender" IS NOT NULL;`,
-              [sender],
-            );
-        } catch (e) {
-            const error = e as UnexpectedNumberOfRows;
-            if (error.isUnexpectedNumberOfRows) {
-                return null;
-            }
-            throw e;
-        }
-    }
-
-    async next(sender: string): Promise<Demand | null> {
-        const sql = `
+  async next(sender: string): Promise<Demand | null> {
+    const sql = `
             WITH 
             "AssignedDemands" AS (
                 SELECT "id", "sender", "recipient"
@@ -118,23 +102,20 @@ export default class DemandsModel extends BaseModel {
             SELECT * FROM "UpdateNewDemand";
         `;
 
-        try {
-            return await this.dao.executeOne(sql, [sender]) as Demand;
-        }  catch (e) {
-            const error = e as UnexpectedNumberOfRows;
-            if (error.isUnexpectedNumberOfRows) {
-                return null;
-            }
-            throw e;
-        }
+    try {
+      return (await this.dao.executeOne(sql, [sender])) as Demand;
+    } catch (e) {
+      const error = e as UnexpectedNumberOfRows;
+      if (error.isUnexpectedNumberOfRows) {
+        return null;
+      }
+      throw e;
     }
+  }
 
-    async close(sender: string): Promise<void> {
-        await this.dao.execute(
-          `UPDATE "Demands" SET "isActive" = FALSE WHERE "sender" = $1 AND "isActive";`,
-          [sender]
-        );
-    }
+  async close(sender: string): Promise<void> {
+    await this.dao.execute(`UPDATE "Demands" SET "isActive" = FALSE WHERE "sender" = $1 AND "isActive";`, [sender]);
+  }
 }
 
-export {DemandsModelError, DemandNotFoundError, DemandsWrongScenarioError, UpdateOptions};
+export { DemandsModelError, DemandNotFoundError, DemandsWrongScenarioError, UpdateOptions };

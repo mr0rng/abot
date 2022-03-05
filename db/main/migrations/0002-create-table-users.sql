@@ -4,7 +4,6 @@ CREATE TABLE "Users" (
   "type"     VARCHAR NOT NULL,
   "isAdmin"  BOOLEAN NOT NULL DEFAULT FALSE,
   "isBanned" BOOLEAN NOT NULL DEFAULT FALSE,
-  "passwordHash" VARCHAR NOT NULL,
   "payload"  JSONB   NOT NULL,
   UNIQUE ("login", "type")
 );

@@ -1,85 +1,65 @@
-import config from '@abot/config'
-import ApiClient from '@abot/api-client';
-import TestsDAO from '@abot/dao/target/tests'
+import { TestsEnv } from '..';
 
-import Application from '../../src/app';
+const env = new TestsEnv();
 
-let application = new Application(config);
-let dao = new TestsDAO(config);
-let client = new ApiClient(config);
+beforeEach(() => env.start());
+afterEach(() => env.stop());
 
-beforeEach(async () => {
-  application = new Application(config);
-  dao = new TestsDAO(config);
-  client = new ApiClient(config);
+test('main', async () => {
+  const session = await env.createSession();
+  await env.dao.prepareDB({
+    Scenarios: [
+      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
+      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+    ],
+  });
 
-  await application.start();
-  await dao.clear();
-  await client.start()
+  expect(await env.client.scenarios.count({ session })).toStrictEqual({ count: 2 });
 });
 
-afterEach(async () => {
-  await application.end();
-  await dao.end();
-  await client.end();
+test('isDeleted', async () => {
+  const session = await env.createSession();
+  await env.dao.prepareDB({
+    Scenarios: [
+      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
+      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: true, payload: {} },
+    ],
+  });
+
+  expect(await env.client.scenarios.count({ session })).toStrictEqual({ count: 1 });
 });
 
-test("main", async () => {
-  await dao.prepareDB({
-    Scenarios: [  
-      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: { } },
-      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: { } }
-    ]
+test('q', async () => {
+  const session = await env.createSession();
+  await env.dao.prepareDB({
+    Scenarios: [
+      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
+      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+    ],
   });
 
-  expect(await client.scenarios.count({})).toStrictEqual({
-    code: 200,
-    response: { count: 2 },
-    status: 'ok'
-  });
-})
+  expect(await env.client.scenarios.count({ q: 'asldja', session })).toStrictEqual({ count: 1 });
+});
 
-test("isDeleted", async () => {
-  await dao.prepareDB({
-    Scenarios: [  
-      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: { } },
-      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: true, payload: { } }
-    ]
+test('id', async () => {
+  const session = await env.createSession();
+  await env.dao.prepareDB({
+    Scenarios: [
+      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
+      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+    ],
   });
 
-  expect(await client.scenarios.count({})).toStrictEqual({
-    code: 200,
-    response: { count: 1 },
-    status: 'ok'
-  });
-})
+  expect(await env.client.scenarios.count({ id: 'first', session })).toStrictEqual({ count: 1 });
+});
 
-test("q", async () => {
-  await dao.prepareDB({
-    Scenarios: [  
-      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: { } },
-      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: { } }
-    ]
+test('invalid session', async () => {
+  await env.dao.prepareDB({
+    Scenarios: [
+      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
+      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+    ],
   });
 
-  expect(await client.scenarios.count({ q: "asldja" })).toStrictEqual({
-    code: 200,
-    response: { count: 1 },
-    status: 'ok'
-  });
-})
-
-test("id", async () => {
-  await dao.prepareDB({
-    Scenarios: [  
-      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: { } },
-      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: { } }
-    ]
-  });
-
-  expect(await client.scenarios.count({ id: "first" })).toStrictEqual({
-    code: 200,
-    response: { count: 1 },
-    status: 'ok'
-  });
-})
+  await expect(env.client.scenarios.count({ session: 'ibfsvld' })).rejects.toThrow('Forbidden');
+});

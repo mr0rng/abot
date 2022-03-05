@@ -1,35 +1,33 @@
-import { 
-  ScenariosCountResponse, 
-  ScenariosDeleteRequest, 
-  ScenariosSearchRequest 
-} from "@abot/api-contract/target/scenarios";
-import { Scenario, SearchRequest } from '@abot/model';
-import { Response } from "@abot/api-contract/src/response";
+import {
+  ApiContractScenarios,
+  ScenariosCountResponse,
+  ScenariosDeleteRequest,
+  ScenariosSearchRequest,
+} from '@abot/api-contract/target/scenarios';
+import { Scenario, SearchRequest, WithSession } from '@abot/model';
 
-import APIClient from '.'
+import APIClient from '.';
 
-export default class APIClientScenarios {
-  constructor (
-    public apiClient: APIClient
-  ) { }
+export default class APIClientScenarios implements ApiContractScenarios {
+  constructor(public apiClient: APIClient) {}
 
-  count (request: ScenariosSearchRequest): Promise<Response<ScenariosCountResponse>> {
+  count(request: ScenariosSearchRequest): Promise<ScenariosCountResponse> {
     return this.apiClient.execute('scenarios.count', request);
   }
 
-  search (request: ScenariosSearchRequest & SearchRequest): Promise<Response<Scenario[]>> {
+  search(request: ScenariosSearchRequest & SearchRequest): Promise<Scenario[]> {
     return this.apiClient.execute('scenarios.search', request);
   }
 
-  create (request: Scenario): Promise<Response<undefined>> {
+  create(request: Omit<Scenario, 'isDeleted'> & WithSession): Promise<void> {
     return this.apiClient.execute('scenarios.create', request);
   }
-  
-  update (request: Scenario): Promise<Response<undefined>> {
+
+  update(request: Omit<Scenario, 'isDeleted'> & WithSession): Promise<void> {
     return this.apiClient.execute('scenarios.update', request);
   }
-  
-  delete (request:  ScenariosDeleteRequest): Promise<Response<undefined>> {
+
+  delete(request: ScenariosDeleteRequest): Promise<void> {
     return this.apiClient.execute('scenarios.delete', request);
   }
 }

@@ -1,92 +1,86 @@
-import config from '@abot/config'
-import ApiClient from '@abot/api-client';
-import TestsDAO from '@abot/dao/target/tests'
+import { TestsEnv } from '..';
 
-import Application from '../../src/app';
+const env = new TestsEnv();
 
-let application = new Application(config);
-let dao = new TestsDAO(config);
-let client = new ApiClient(config);
+beforeEach(() => env.start());
+afterEach(() => env.stop());
 
-beforeEach(async () => {
-  application = new Application(config);
-  dao = new TestsDAO(config);
-  client = new ApiClient(config);
+test('search', async () => {
+  const session = await env.createSession();
+  await env.dao.prepareDB({
+    Scenarios: [
+      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
+      { id: 'second', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+    ],
+  });
 
-  await application.start();
-  await dao.clear();
-  await client.start()
+  expect(await env.client.scenarios.search({ session, q: '', limit: 10, offset: 0 })).toStrictEqual([
+    { id: 'first', description: 'asldja asdklasd', payload: {} },
+    { id: 'second', description: 'qewre qaweq eqw eqw eqwe', payload: {} },
+  ]);
 });
 
-afterEach(async () => {
-  await application.end();
-  await dao.end();
-  await client.end();
+test('limit & offset', async () => {
+  const session = await env.createSession();
+  await env.dao.prepareDB({
+    Scenarios: [
+      { id: '0', description: 'asldja asdklasd', isDeleted: false, payload: {} },
+      { id: '1', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+      { id: '2', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+      { id: '3', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+      { id: '4', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+      { id: '5', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+      { id: '6', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+      { id: '7', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
+    ],
+  });
+
+  expect(await env.client.scenarios.search({ session, q: '', limit: 2, offset: 0 })).toStrictEqual([
+    { id: '0', description: 'asldja asdklasd', payload: {} },
+    { id: '1', description: 'qewre qaweq eqw eqw eqwe', payload: {} },
+  ]);
+  expect(await env.client.scenarios.search({ session, q: '', limit: 2, offset: 2 })).toStrictEqual([
+    { id: '2', description: 'qewre qaweq eqw eqw eqwe', payload: {} },
+    { id: '3', description: 'qewre qaweq eqw eqw eqwe', payload: {} },
+  ]);
 });
 
-test("search", async () => {
-  await dao.prepareDB({
-    Scenarios: [  
-      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: { } },
-      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: { } }
-    ]
-  });
-
-  expect(await client.scenarios.search({ q: '', limit: 10, offset: 0 })).toStrictEqual({
-    code: 200,
-    response: [
-      { id: 'first', description: 'asldja asdklasd', payload: { } },
-      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', payload: { } }
+test('q', async () => {
+  const session = await env.createSession();
+  await env.dao.prepareDB({
+    Scenarios: [
+      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
+      { id: 'second', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
     ],
-    status: 'ok'
-  });
-})
-
-test("q", async () => {
-  await dao.prepareDB({
-    Scenarios: [  
-      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: { } },
-      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: { } }
-    ]
   });
 
-  expect(await client.scenarios.search({ q: 'asldja', limit: 10, offset: 0 })).toStrictEqual({
-    code: 200,
-    response: [
-      { id: 'first', description: 'asldja asdklasd', payload: { } },
+  expect(await env.client.scenarios.search({ session, q: 'asldja', limit: 10, offset: 0 })).toStrictEqual([
+    { id: 'first', description: 'asldja asdklasd', payload: {} },
+  ]);
+});
+
+test('id', async () => {
+  const session = await env.createSession();
+  await env.dao.prepareDB({
+    Scenarios: [
+      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
+      { id: 'second', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
     ],
-    status: 'ok'
-  });
-})
-
-test("id", async () => {
-  await dao.prepareDB({
-    Scenarios: [  
-      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: { } },
-      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: { } }
-    ]
   });
 
-  expect(await client.scenarios.search({ id: 'sceond', limit: 10, offset: 0 })).toStrictEqual({
-    code: 200,
-    response: [
-      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', payload: { } }
+  expect(await env.client.scenarios.search({ session, id: 'second', limit: 10, offset: 0 })).toStrictEqual([
+    { id: 'second', description: 'qewre qaweq eqw eqw eqwe', payload: {} },
+  ]);
+});
+
+test('isDeleted', async () => {
+  const session = await env.createSession();
+  await env.dao.prepareDB({
+    Scenarios: [
+      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
+      { id: 'second', description: 'qewre qaweq eqw eqw eqwe', isDeleted: true, payload: {} },
     ],
-    status: 'ok'
-  });
-})
-
-test("isDeleted", async () => {
-  await dao.prepareDB({
-    Scenarios: [  
-      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: { } },
-      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: true, payload: { } }
-    ]
   });
 
-  expect(await client.scenarios.search({ id: 'sceond', limit: 10, offset: 0 })).toStrictEqual({
-    code: 200,
-    response: [ ],
-    status: 'ok'
-  });
-})
+  expect(await env.client.scenarios.search({ session, id: 'second', limit: 10, offset: 0 })).toStrictEqual([]);
+});

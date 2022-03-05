@@ -1,36 +1,48 @@
-import { PasswordSignUpInRequest, PasswordSignUpInResponse } from '@abot/api-contract/target/user/password'
+import { PasswordSignUpInRequest, PasswordSignUpInResponse } from '@abot/api-contract/target/user/password';
+import { UnexpectedNumberOfRows } from '@abot/dao';
+import { User } from '@abot/model';
 
+import { ApplicationError, Command } from '../..';
 import Application from '../../../app';
-import {ApplicationError, Command} from '../..';
-import UserModel, {UserNotFound} from "../../../models/user-model";
-
 
 export default new Command<PasswordSignUpInRequest, PasswordSignUpInResponse>(
-  "user.password.signIn",
-  async (app: Application, request: PasswordSignUpInRequest): Promise<PasswordSignUpInResponse> => {
-      const userModel = new UserModel(app.dao);
-      try {
-          const user = await userModel.getByCredentials(request.login, request.type, request.passwordHash);
-          if (user.isBanned) {
-              throw new ApplicationError(403, "User banned!");
-          }
-          const session = await app.sessions.create_session(user);
-          return { session };
-      } catch (e) {
-          if (e instanceof UserNotFound) {
-              throw new ApplicationError(403, "Auth failed");
-          }
-          throw e;
+  'user.password.signIn',
+  async (
+    { dao, sessions }: Application,
+    { login, passwordHash }: PasswordSignUpInRequest,
+  ): Promise<PasswordSignUpInResponse> => {
+    try {
+      const user = await dao.executeOne<User>(
+        `
+          SELECT "id", "login", "type", "isAdmin", "isBanned", "payload" 
+          FROM "Users" 
+          WHERE 
+            "type" = $2 
+            AND "login" = $1 
+            AND "payload"->'privateKeys'->>'passwordHash' = $3
+            AND "isBanned" = FALSE
+        `,
+        [login, 'web', passwordHash],
+      );
+      const session = await sessions.create(user);
+
+      return { session };
+    } catch (e) {
+      const error = e as UnexpectedNumberOfRows;
+      if (error.isUnexpectedNumberOfRows) {
+        throw new ApplicationError(403, 'Forbidden');
       }
+
+      throw e;
+    }
   },
   {
-    type: "object",
+    type: 'object',
     properties: {
-      type: {type: "string"},
-      login: {type: "string"},
-      passwordHash: {type: "string"},
+      login: { type: 'string' },
+      passwordHash: { type: 'string' },
     },
-    required: ["login", "passwordHash", "type"],
-    additionalProperties: false
-  }
+    required: ['login', 'passwordHash'],
+    additionalProperties: false,
+  },
 );

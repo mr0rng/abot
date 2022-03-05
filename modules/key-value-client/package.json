@@ -4,8 +4,7 @@
   "description": "",
   "main": "target/index.js",
   "scripts": {
-    "build": "NODE_ENV=lib ts",
-    "test": "jest --maxConcurrency=1 --maxWorkers=1 --bail"
+    "build": "NODE_ENV=lib ts"
   },
   "devDependencies": {
     "@abot/ts": "^0.1.0",
