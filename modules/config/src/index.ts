@@ -16,6 +16,9 @@ export class Config {
   sessions = {
     uri: process.env.SESSIONS || 'localhost:7001',
   };
+  telegram = {
+    bot_token: process.env.BOT_TOKEN,
+  };
 }
 
 export default new Config();
