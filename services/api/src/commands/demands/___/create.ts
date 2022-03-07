@@ -23,7 +23,6 @@ export default new Command<DemandsCreateRequest, DemandsCreateResponse>(
   {
     type: 'object',
     properties: {
-      session: { type: 'string' },
       scenario: { type: 'string' },
       isActive: { type: 'boolean' },
       payload: { type: 'object' },

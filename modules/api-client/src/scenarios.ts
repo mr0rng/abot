@@ -4,7 +4,7 @@ import {
   ScenariosDeleteRequest,
   ScenariosSearchRequest,
 } from '@abot/api-contract/target/scenarios';
-import { Scenario, SearchRequest, WithSession } from '@abot/model';
+import { Scenario, SearchRequest, WithSessionUser } from '@abot/model';
 
 import APIClient from '.';
 
@@ -19,11 +19,11 @@ export default class APIClientScenarios implements ApiContractScenarios {
     return this.apiClient.execute('scenarios.search', request);
   }
 
-  create(request: Omit<Scenario, 'isDeleted'> & WithSession): Promise<void> {
+  create(request: Omit<Scenario, 'isDeleted'> & WithSessionUser): Promise<void> {
     return this.apiClient.execute('scenarios.create', request);
   }
 
-  update(request: Omit<Scenario, 'isDeleted'> & WithSession): Promise<void> {
+  update(request: Omit<Scenario, 'isDeleted'> & WithSessionUser): Promise<void> {
     return this.apiClient.execute('scenarios.update', request);
   }
 

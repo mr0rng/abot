@@ -1,3 +1,5 @@
+import { WithSession } from '@abot/model';
+
 import { ApiContractUserPassword } from './password';
 
 export interface ApiContractUser {
@@ -5,7 +7,7 @@ export interface ApiContractUser {
   get: (request: UserGetRequest) => Promise<UserGetResponse>;
 }
 
-export type UserGetRequest = { session: string };
+export type UserGetRequest = WithSession;
 
 export type UserGetResponse = {
   login: string;

@@ -30,15 +30,23 @@ export type Scenario = {
   payload: object;
 };
 
+export type DemandStatus = 'active' | 'closed';
+
 export type Demand = {
   id: string;
+  title: string;
   description: string;
   date: string;
   scenario: string;
-  recipient: string;
-  sender: string;
-  isActive: boolean;
+  status: DemandStatus;
   payload: object;
+};
+
+export type Participants = {
+  demand: string;
+  user: string;
+  type: string;
+  payload: Record<string, unknown>;
 };
 
 export type Message = {
@@ -61,4 +69,9 @@ export type SearchRequest = {
 
 export type WithSession = {
   session: string;
+};
+
+export type WithSessionUser = {
+  sessionUser: string;
+  isSessionUserIsAdmin: boolean;
 };

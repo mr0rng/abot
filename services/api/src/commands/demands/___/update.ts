@@ -26,7 +26,6 @@ export default new Command<DemandsUpdateRequest, DemandsCreateResponse>(
   {
     type: 'object',
     properties: {
-      session: { type: 'string' },
       id: { type: 'string' },
       scenario: { type: 'string' },
       isActive: { type: 'boolean' },

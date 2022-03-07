@@ -20,9 +20,7 @@ export default new Command<SessionRequired, Demand>(
   },
   {
     type: 'object',
-    properties: {
-      session: { type: 'string' },
-    },
+    properties: {},
     required: ['session'],
     additionalProperties: false,
   },

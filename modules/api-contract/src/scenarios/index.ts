@@ -1,13 +1,13 @@
-import { Scenario, SearchRequest, WithSession } from '@abot/model';
+import { Scenario, SearchRequest, WithSessionUser } from '@abot/model';
 
 export interface ApiContractScenarios {
   count: (request: ScenariosSearchRequest) => Promise<ScenariosCountResponse>;
   search: (request: ScenariosSearchRequest & SearchRequest) => Promise<Scenario[]>;
-  create: (request: Omit<Scenario, 'isDeleted'> & WithSession) => Promise<void>;
-  update: (request: Omit<Scenario, 'isDeleted'> & WithSession) => Promise<void>;
+  create: (request: Omit<Scenario, 'isDeleted'> & WithSessionUser) => Promise<void>;
+  update: (request: Omit<Scenario, 'isDeleted'> & WithSessionUser) => Promise<void>;
   delete: (request: ScenariosDeleteRequest) => Promise<void>;
 }
 
 export type ScenariosCountResponse = { count: number };
-export type ScenariosSearchRequest = { session: string; q?: string; id?: string };
-export type ScenariosDeleteRequest = { session: string; id: string };
+export type ScenariosSearchRequest = { q?: string; id?: string };
+export type ScenariosDeleteRequest = { id: string } & WithSessionUser;
