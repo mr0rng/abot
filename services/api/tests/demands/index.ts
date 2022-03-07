@@ -86,4 +86,15 @@ export const Users: User[] = [
       a: 12,
     },
   },
+  {
+    id: 'tst2',
+    login: 'tstlgn42',
+    type: 'web',
+    isAdmin: false,
+    isBanned: false,
+    payload: {
+      privateKeys: { passwordHash: 'testasgas' },
+      a: 12,
+    },
+  },
 ];

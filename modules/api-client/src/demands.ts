@@ -32,7 +32,7 @@ export default class APIClientDemands implements ApiContractDemands {
     return this.apiClient.execute('demands.update', request);
   }
 
-  close(request: DemandsCloseRequest & WithSession): Promise<void> {
+  close(request: DemandsCloseRequest): Promise<void> {
     return this.apiClient.execute('demands.close', request);
   }
 

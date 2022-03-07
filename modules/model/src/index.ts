@@ -44,10 +44,12 @@ export type Demand = {
   payload: object;
 };
 
+export type ParticipantTypes = 'participant' | 'donor';
+
 export type Participants = {
   demand: string;
   user: string;
-  type: string;
+  type: ParticipantTypes;
   payload: Record<string, unknown>;
 };
 

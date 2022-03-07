@@ -24,7 +24,7 @@ export type DemandsRemoveParticipantRequest = {
 
 export type DemandsCloseRequest = {
   id: string;
-};
+} & WithSessionUser;
 
 export type DemandsCountResponse = {
   active: number;

@@ -13,9 +13,9 @@ test('main', async () => {
     Scenarios,
     Demands,
     Participants: [
-      { demand: 'Location/Service', user: 'tstusr', type: 'recipeint', payload: {} },
-      { demand: 'Location/Service', user: 'tst', type: 'recipeint', payload: {} },
-      { demand: 'Location/Another', user: 'tst', type: 'recipeint', payload: {} },
+      { demand: 'Location/Service', user: 'tstusr', type: 'recipient', payload: {} },
+      { demand: 'Location/Service', user: 'tst', type: 'recipient', payload: {} },
+      { demand: 'Location/Another', user: 'tst', type: 'recipient', payload: {} },
     ],
   });
 
@@ -36,7 +36,7 @@ test('isAdmin = FALSE', async () => {
     Users,
     Scenarios,
     Demands,
-    Participants: [{ demand: 'Location/Service', user: 'tstusr', type: 'recipeint', payload: {} }],
+    Participants: [{ demand: 'Location/Service', user: 'tstusr', type: 'recipient', payload: {} }],
   });
 
   expect(await env.client.demands.count({ ...session, q: '', my: true })).toStrictEqual({ count: 1 });
