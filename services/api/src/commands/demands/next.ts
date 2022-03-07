@@ -1,8 +1,8 @@
 import { Demand, WithSessionUser } from '@abot/api-contract/target/demands';
+import { UnexpectedNumberOfRows } from '@abot/dao';
 
-import { NotFoundError, Command } from '..';
+import { Command, NotFoundError } from '..';
 import Application from '../../app';
-import {UnexpectedNumberOfRows} from "@abot/dao";
 
 export default new Command<WithSessionUser, Demand>(
   'demands.next',
@@ -72,12 +72,14 @@ export default new Command<WithSessionUser, Demand>(
     SELECT * FROM "Demands" WHERE "id" IN (SELECT "id" FROM "GetNewDemand")
     ;
     `;
-  
+
     try {
       return await app.dao.executeOne(sql, [request.sessionUser]);
     } catch (e) {
       const error = e as UnexpectedNumberOfRows;
-      if (error.isUnexpectedNumberOfRows) { throw new NotFoundError(); }
+      if (error.isUnexpectedNumberOfRows) {
+        throw new NotFoundError();
+      }
       throw e;
     }
   },

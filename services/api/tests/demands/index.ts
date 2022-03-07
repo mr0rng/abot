@@ -1,5 +1,5 @@
+import { UserScenario } from '@abot/dao/target/tests';
 import { Demand, Scenario, User } from '@abot/model';
-import { UserScenario } from "@abot/dao/target/tests";
 
 export const Scenarios: Scenario[] = [
   {
@@ -106,6 +106,4 @@ export const Users: User[] = [
   },
 ];
 
-export const UsersScenarios: UserScenario[] = [
-  {scenario: 'serv1', user: 'tstusr'},
-];
+export const UsersScenarios: UserScenario[] = [{ scenario: 'serv1', user: 'tstusr' }];
