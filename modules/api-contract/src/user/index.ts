@@ -1,7 +1,9 @@
 import { ApiContractUserPassword } from './password';
+import { ApiContractUserTelegram } from './telegram';
 
 export interface ApiContractUser {
   password: ApiContractUserPassword;
+  telegram: ApiContractUserTelegram;
   get: (request: UserGetRequest) => Promise<UserGetResponse>;
 }
 

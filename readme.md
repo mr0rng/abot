@@ -55,3 +55,8 @@ Build all packages.
 | DB_MAIN_POOL_SIZE | 10                                               |
 | NATS              | localhost:6222                                   |
 | API_TIMEOUT       | 5000                                             |
+| BOT_TOKEN         |                                                  |
+| BOT_HOST          |                                                  |
+| BOT_PORT          | 8443                                             |
+| BOT_CERT_FILE     | dev_bot.pem                                      |
+| BOT_KEY_FILE      | dev_bot.key                                      |

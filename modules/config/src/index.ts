@@ -15,6 +15,14 @@ export class Config {
   };
   sessions = {
     uri: process.env.SESSIONS || 'localhost:7001',
+    admin_key: process.env.SESSIONS_ADMIN_KEY,
+  };
+  telegram = {
+    bot_token: process.env.BOT_TOKEN,
+    bot_host: process.env.BOT_HOST,
+    bot_port: parseInt(process.env.BOT_PORT) || 8443,
+    bot_cert_file: process.env.BOT_CERT_FILE || 'dev_bot.pem',
+    bot_key_file: process.env.BOT_KEY_FILE || 'dev_bot.key',
   };
 }
 

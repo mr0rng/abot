@@ -6,7 +6,8 @@
   "scripts": {
     "build": "ts",
     "build:docker": "npm run build && docker-node",
-    "test": "jest --maxConcurrency=1 --maxWorkers=1 --bail --detectOpenHandles"
+    "test": "jest --maxConcurrency=1 --maxWorkers=1 --bail --detectOpenHandles",
+    "start": "node target/index.js"
   },
   "devDependencies": {
     "@abot/api-client": "^0.1.0",

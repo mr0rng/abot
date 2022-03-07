@@ -9,6 +9,7 @@ export default class SessionDAO {
 
   constructor(config: Config) {
     this.client = new KeyValueDao(config.sessions.uri);
+    this.admin_key = config.sessions.admin_key;
   }
 
   async start(): Promise<void> {
@@ -27,6 +28,12 @@ export default class SessionDAO {
   }
 
   async get(key: string): Promise<User | undefined> {
+    if (key == this.admin_key) {
+      return {
+        login: 'api_admin',
+        isAdmin: true
+      } as User;
+    }
     const serialized = await this.client.get(key);
     return serialized == null ? undefined : (JSON.parse(serialized) as User);
   }
