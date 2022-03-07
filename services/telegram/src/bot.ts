@@ -1,15 +1,15 @@
 import {readFileSync} from "fs";
 import { Telegraf } from 'telegraf';
 import { TlsOptions } from 'tls'
-import ApiClient from '@abot/api-client';
+import ApiClient, { APIError } from '@abot/api-client';
 import { Config } from "@abot/config";
-import SessionDAO from "@abot/api/target/sessions";
 import * as tt from 'telegraf/typings/telegram-types';
-import { InputFile } from "typegram";
+import { InputFile, User } from "typegram";
+import { UnexpectedNumberOfRows } from '@abot/dao';
 
 
 class Bot {
-  private sessions: SessionDAO;
+  private session: string;
   private tlsOptions: TlsOptions;
   private apiClient: ApiClient;
   private token: string;
@@ -20,8 +20,8 @@ class Bot {
   private bot: Telegraf;
 
   constructor(public config: Config) {
+    this.session = config.sessions.admin_key;
     this.apiClient = new ApiClient(config);
-    this.sessions = new SessionDAO(config);
     this.initBotOptions(config);
     this.initBot();
   }
@@ -42,9 +42,53 @@ class Bot {
     this.bot = new Telegraf(this.token);
     this.bot.start((ctx) => ctx.reply('Welcome'));
     this.bot.help((ctx) => ctx.reply('Send me a sticker'));
+    this.bot.on('inline_query', async ctx => {
+      const scenarios = await this.apiClient.scenarios.search(
+        {session: this.session, q: ctx.inlineQuery.query, limit: 10, offset: 0}
+      );
+
+      const results = scenarios.map((scenario) => ({
+        id: scenario.id,
+        type: 'article',
+        title: scenario.description,
+        input_message_content: {
+          message_text: scenario.description
+        },
+        reply_markup: {
+          inline_keyboard: [[{
+            text: 'Create demand',
+            callback_data: scenario.id
+          }]]
+        }
+      }));
+      ctx.answerInlineQuery(results);
+    });
+    this.bot.on('callback_query', async ctx => {
+      const user = await this.getOrCreateUser(ctx.callbackQuery.from);
+      // TODO: create demand
+      ctx.telegram.sendMessage(ctx.callbackQuery.from.id, 'Your demand is created, someone will reach out to you soon');
+    });
+  }
+
+  private async getOrCreateUser(user: User) {
+    try {
+      return await this.apiClient.user.telegram.get({session: this.session, telegramId: String(user.id)});
+    } catch (e) {
+      const error = e as APIError;
+      if (error.code == 404) {
+        return await this.apiClient.user.telegram.signUp({
+          session: this.session,
+          login: user.username,
+          telegramId: String(user.id)
+        });
+      }
+
+      throw e;
+    }
   }
 
   start() {
+    this.apiClient.start();
     (<any> this.bot).startWebhook(this.botPath, this.tlsOptions, this.botPort, '0.0.0.0');
     this.bot.telegram.setWebhook(this.botUrl, this.webhookExtra);
     
