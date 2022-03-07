@@ -28,7 +28,7 @@ export default class APIClientDemands implements ApiContractDemands {
     return this.apiClient.execute('demands.create', request);
   }
 
-  update(request: DemandsUpdateRequest): Promise<void> {
+  update(request: DemandsUpdateRequest): Promise<Demand> {
     return this.apiClient.execute('demands.update', request);
   }
 
