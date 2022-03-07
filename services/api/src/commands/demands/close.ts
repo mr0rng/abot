@@ -1,16 +1,18 @@
 import { DemandsCloseRequest } from '@abot/api-contract/target/demands';
 
-import { NotFoundError, Command } from '..';
+import { Command, NotFoundError } from '..';
 import Application from '../../app';
 
 export default new Command<DemandsCloseRequest, void>(
   'demands.close',
   async (app: Application, request: DemandsCloseRequest): Promise<void> => {
-    const result = await (
-      request.isSessionUserIsAdmin ? closeByAdmin(app, request.id): closeByUser(app, request.id, request.sessionUser)
-    );
-    
-    if (result.rowCount != 1) { throw new NotFoundError();}
+    const result = await (request.isSessionUserIsAdmin
+      ? closeByAdmin(app, request.id)
+      : closeByUser(app, request.id, request.sessionUser));
+
+    if (result.rowCount != 1) {
+      throw new NotFoundError();
+    }
     return;
   },
   {
@@ -25,18 +27,16 @@ export default new Command<DemandsCloseRequest, void>(
   },
 );
 
-
 const closeByAdmin = async (app, id) => {
   const sql = `
         UPDATE "Demands" SET "status" = 'closed' WHERE "id" = $1;
       `;
   return app.dao.execute(sql, [id]);
-}
-
+};
 
 const closeByUser = async (app, id, user) => {
-  const allowedTypes = ['recipient', 'moderator'].map(x => `'${x}'`).join(', ');
-  
+  const allowedTypes = ['recipient', 'moderator'].map((x) => `'${x}'`).join(', ');
+
   const sql = `
         UPDATE "Demands" SET "status" = 'closed'
         WHERE
@@ -53,4 +53,4 @@ const closeByUser = async (app, id, user) => {
       ;
       `;
   return app.dao.execute(sql, [id, user]);
-}
+};

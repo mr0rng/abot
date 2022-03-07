@@ -36,11 +36,15 @@ export class ApplicationError extends Error {
 }
 
 export class NotFoundError extends ApplicationError {
-  constructor() { super(404, 'Not found') }
+  constructor() {
+    super(404, 'Not found');
+  }
 }
 
 export class ForbiddenError extends ApplicationError {
-  constructor() { super(403, 'Forbidden') }
+  constructor() {
+    super(403, 'Forbidden');
+  }
 }
 
 export type CommandCallback<Request, Response> = (app: Application, request: Request) => Promise<Response>;
