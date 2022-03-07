@@ -1,16 +1,15 @@
-import { Scenario, WithSession } from '@abot/model';
+import { Scenario, WithSessionUser } from '@abot/model';
 
 import { ApplicationError, Command } from '..';
 import Application from '../../app';
 
-export default new Command<Omit<Scenario, 'isDeleted'> & WithSession, void>(
+export default new Command<Omit<Omit<Scenario, 'isDeleted'> & WithSessionUser, 'isDeleted'>, void>(
   'scenarios.create',
   async (
-    { dao, sessions }: Application,
-    { id, description, payload, session }: Omit<Scenario, 'isDeleted'> & WithSession,
+    { dao }: Application,
+    { id, description, payload, isSessionUserIsAdmin }: Omit<Scenario, 'isDeleted'> & WithSessionUser,
   ): Promise<void> => {
-    const user = await sessions.get(session);
-    if (user == null || !user.isAdmin) {
+    if (!isSessionUserIsAdmin) {
       throw new ApplicationError(403, 'Forbidden');
     }
 
@@ -33,12 +32,13 @@ export default new Command<Omit<Scenario, 'isDeleted'> & WithSession, void>(
   {
     type: 'object',
     properties: {
-      session: { type: 'string' },
+      sessionUser: { type: 'string' },
+      isSessionUserIsAdmin: { type: 'boolean' },
       id: { type: 'string' },
       description: { type: 'string' },
       payload: { type: 'object' },
     },
-    required: ['session', 'id', 'description', 'payload'],
+    required: ['id', 'description', 'payload', 'sessionUser', 'isSessionUserIsAdmin'],
     additionalProperties: false,
   },
 );

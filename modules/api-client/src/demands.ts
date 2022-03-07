@@ -1,22 +1,26 @@
 import {
+  ApiContractDemands,
+  DemandsAddParticipantRequest,
+  DemandsCloseRequest,
   DemandsCountResponse,
   DemandsCreateRequest,
   DemandsCreateResponse,
+  DemandsRemoveParticipantRequest,
   DemandsSearchRequest,
   DemandsUpdateRequest,
 } from '@abot/api-contract/target/demands';
-import { Demand, WithSession } from '@abot/model';
+import { Demand, SearchRequest, WithSession } from '@abot/model';
 
 import APIClient from '.';
 
-export default class APIClientDemands {
+export default class APIClientDemands implements ApiContractDemands {
   constructor(public apiClient: APIClient) {}
 
   count(request: DemandsSearchRequest): Promise<DemandsCountResponse> {
     return this.apiClient.execute('demands.count', request);
   }
 
-  search(request: DemandsSearchRequest): Promise<Demand[]> {
+  search(request: DemandsSearchRequest & SearchRequest): Promise<Demand[]> {
     return this.apiClient.execute('demands.search', request);
   }
 
@@ -28,15 +32,21 @@ export default class APIClientDemands {
     return this.apiClient.execute('demands.update', request);
   }
 
+  close(request: DemandsCloseRequest & WithSession): Promise<void> {
+    return this.apiClient.execute('demands.close', request);
+  }
+
   next(request: WithSession): Promise<Demand> {
     return this.apiClient.execute('demands.next', request);
   }
 
-  close(request: WithSession): Promise<void> {
-    return this.apiClient.execute('demands.close', request);
-  }
+  participants = {
+    add: (request: DemandsAddParticipantRequest & WithSession): Promise<void> => {
+      return this.apiClient.execute('demands.add', request);
+    },
 
-  getActiveAsSender(request: WithSession): Promise<Demand> {
-    return this.apiClient.execute('demands.getActiveAsSender', request);
-  }
+    remove: (request: DemandsRemoveParticipantRequest & WithSession): Promise<void> => {
+      return this.apiClient.execute('demands.add', request);
+    },
+  };
 }

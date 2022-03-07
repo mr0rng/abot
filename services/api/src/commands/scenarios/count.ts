@@ -1,17 +1,12 @@
 import { ScenariosCountResponse, ScenariosSearchRequest } from '@abot/api-contract/target/scenarios';
 
-import { ApplicationError, Command } from '..';
+import { Command } from '..';
 import Application from '../../app';
 import { expressions } from '../../models/search/scenarios';
 
 export default new Command<ScenariosSearchRequest, ScenariosCountResponse>(
   'scenarios.count',
-  async ({ dao, sessions }: Application, request: ScenariosSearchRequest): Promise<ScenariosCountResponse> => {
-    const user = await sessions.get(request.session);
-    if (user == null) {
-      throw new ApplicationError(403, 'Forbidden');
-    }
-
+  async ({ dao }: Application, request: ScenariosSearchRequest): Promise<ScenariosCountResponse> => {
     const params: unknown[] = [];
     return dao.executeOne(
       `
@@ -25,11 +20,10 @@ export default new Command<ScenariosSearchRequest, ScenariosCountResponse>(
   {
     type: 'object',
     properties: {
-      session: { type: 'string' },
       q: { type: 'string', nullable: true },
       id: { type: 'string', nullable: true },
     },
-    required: ['session'],
+    required: [],
     additionalProperties: false,
   },
 );

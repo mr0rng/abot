@@ -1,25 +1,21 @@
 import { v4 } from 'uuid';
 
-import { PasswordSignUpInRequest, PasswordSignUpInResponse } from '@abot/api-contract/target/user/password';
-
-import { ApplicationError, Command } from '../..';
-import Application from '../../../app';
 import { TelegramUserSignUpRequest } from '@abot/api-contract/src/user/telegram';
 import { UserGetResponse } from '@abot/api-contract/target/user';
 
+import { ApplicationError, Command } from '../..';
+import Application from '../../../app';
+
 export default new Command<TelegramUserSignUpRequest, UserGetResponse>(
   'user.telegram.signUp',
-  async (
-    { dao, sessions }: Application,
-    request: TelegramUserSignUpRequest,
-  ): Promise<UserGetResponse> => {
+  async ({ dao, sessions }: Application, request: TelegramUserSignUpRequest): Promise<UserGetResponse> => {
     const admin = await sessions.get(request.session);
     if (admin == null || !admin.isAdmin) {
       throw new ApplicationError(403, 'Forbidden');
     }
 
     try {
-      const { id } = await dao.executeOne(
+      await dao.executeOne(
         `
           INSERT INTO "Users" ("id", "login", "type", "payload") 
           VALUES ($1, $2, $3, $4) 

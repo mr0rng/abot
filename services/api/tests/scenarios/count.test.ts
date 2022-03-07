@@ -6,7 +6,6 @@ beforeEach(() => env.start());
 afterEach(() => env.stop());
 
 test('main', async () => {
-  const session = await env.createSession();
   await env.dao.prepareDB({
     Scenarios: [
       { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
@@ -14,11 +13,10 @@ test('main', async () => {
     ],
   });
 
-  expect(await env.client.scenarios.count({ session })).toStrictEqual({ count: 2 });
+  expect(await env.client.scenarios.count({})).toStrictEqual({ count: 2 });
 });
 
 test('isDeleted', async () => {
-  const session = await env.createSession();
   await env.dao.prepareDB({
     Scenarios: [
       { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
@@ -26,11 +24,10 @@ test('isDeleted', async () => {
     ],
   });
 
-  expect(await env.client.scenarios.count({ session })).toStrictEqual({ count: 1 });
+  expect(await env.client.scenarios.count({})).toStrictEqual({ count: 1 });
 });
 
 test('q', async () => {
-  const session = await env.createSession();
   await env.dao.prepareDB({
     Scenarios: [
       { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
@@ -38,11 +35,10 @@ test('q', async () => {
     ],
   });
 
-  expect(await env.client.scenarios.count({ q: 'asldja', session })).toStrictEqual({ count: 1 });
+  expect(await env.client.scenarios.count({ q: 'asldja' })).toStrictEqual({ count: 1 });
 });
 
 test('id', async () => {
-  const session = await env.createSession();
   await env.dao.prepareDB({
     Scenarios: [
       { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
@@ -50,16 +46,5 @@ test('id', async () => {
     ],
   });
 
-  expect(await env.client.scenarios.count({ id: 'first', session })).toStrictEqual({ count: 1 });
-});
-
-test('invalid session', async () => {
-  await env.dao.prepareDB({
-    Scenarios: [
-      { id: 'first', description: 'asldja asdklasd', isDeleted: false, payload: {} },
-      { id: 'sceond', description: 'qewre qaweq eqw eqw eqwe', isDeleted: false, payload: {} },
-    ],
-  });
-
-  await expect(env.client.scenarios.count({ session: 'ibfsvld' })).rejects.toThrow('Forbidden');
+  expect(await env.client.scenarios.count({ id: 'first' })).toStrictEqual({ count: 1 });
 });

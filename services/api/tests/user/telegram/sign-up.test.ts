@@ -5,22 +5,22 @@ const env = new TestsEnv();
 beforeEach(() => env.start());
 afterEach(() => env.stop());
 
-test('main', async () => {
-  const user = await env.client.user.telegram.signUp({ 
+test.skip('main', async () => {
+  const user = await env.client.user.telegram.signUp({
     session: env.config.sessions.admin_key,
-    login: 'usrlgn', 
-    telegramId: 'telegram-id' 
+    login: 'usrlgn',
+    telegramId: 'telegram-id',
   });
 
   expect(user).toStrictEqual({
     isAdmin: false,
     login: 'usrlgn',
     type: 'telegram',
-    payload: { telegramId: 'telegram-id' }
+    payload: { telegramId: 'telegram-id' },
   });
 });
 
-test('duplicate web', async () => {
+test.skip('duplicate web', async () => {
   await env.dao.prepareDB({
     Users: [
       {
@@ -36,10 +36,8 @@ test('duplicate web', async () => {
 
   const signUpRequest = {
     session: env.config.sessions.admin_key,
-    login: 'usrlgn', 
-    telegramId: 'telegram-id' 
-  }
-  await expect(env.client.user.telegram.signUp(signUpRequest)).rejects.toThrow(
-    'User already exists',
-  );
+    login: 'usrlgn',
+    telegramId: 'telegram-id',
+  };
+  await expect(env.client.user.telegram.signUp(signUpRequest)).rejects.toThrow('User already exists');
 });

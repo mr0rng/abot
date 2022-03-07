@@ -47,7 +47,7 @@ export default new Command<TelegramUserGetRequest, UserGetResponse>(
     type: 'object',
     properties: {
       session: { type: 'string' },
-      telegramId: { type: 'string' }
+      telegramId: { type: 'string' },
     },
     required: ['session', 'telegramId'],
     additionalProperties: false,

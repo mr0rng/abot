@@ -5,9 +5,8 @@ import Application from '../../app';
 
 export default new Command<ScenariosDeleteRequest, void>(
   'scenarios.delete',
-  async ({ dao, sessions }: Application, { id, session }: ScenariosDeleteRequest): Promise<void> => {
-    const user = await sessions.get(session);
-    if (user == null || !user.isAdmin) {
+  async ({ dao }: Application, { id, isSessionUserIsAdmin }: ScenariosDeleteRequest): Promise<void> => {
+    if (!isSessionUserIsAdmin) {
       throw new ApplicationError(403, 'Forbidden');
     }
 
@@ -32,10 +31,11 @@ export default new Command<ScenariosDeleteRequest, void>(
   {
     type: 'object',
     properties: {
-      session: { type: 'string' },
       id: { type: 'string' },
+      sessionUser: { type: 'string' },
+      isSessionUserIsAdmin: { type: 'boolean' },
     },
-    required: ['session', 'id'],
+    required: ['id', 'sessionUser', 'isSessionUserIsAdmin'],
     additionalProperties: false,
   },
 );

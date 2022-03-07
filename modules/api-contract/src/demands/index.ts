@@ -1,13 +1,30 @@
-import { Demand, WithSession } from '@abot/model';
+import { Demand, SearchRequest, WithSession, WithSessionUser } from '@abot/model';
 
 export interface ApiContractDemands {
   count: (request: DemandsSearchRequest) => Promise<DemandsCountResponse>;
-  search: (request: DemandsSearchRequest) => Promise<Demand[]>;
+  search: (request: DemandsSearchRequest & SearchRequest) => Promise<Demand[]>;
   create: (request: DemandsCreateRequest) => Promise<DemandsCreateResponse>;
   update: (request: DemandsUpdateRequest) => Promise<void>;
+  close: (request: DemandsCloseRequest) => Promise<void>;
   next: (request: WithSession) => Promise<Demand>;
-  close: (request: WithSession) => Promise<void>;
+  participants: {
+    add: (request: DemandsAddParticipantRequest & WithSession) => Promise<void>;
+    remove: (request: DemandsRemoveParticipantRequest & WithSession) => Promise<void>;
+  };
 }
+
+export type DemandsAddParticipantRequest = {
+  user: string;
+  type: string;
+};
+
+export type DemandsRemoveParticipantRequest = {
+  user: string;
+};
+
+export type DemandsCloseRequest = {
+  id: string;
+};
 
 export type DemandsCountResponse = {
   active: number;
@@ -15,17 +32,14 @@ export type DemandsCountResponse = {
 };
 
 export type DemandsSearchRequest = {
-  session: string;
   q: string;
   id?: string;
   my?: boolean;
   login?: string;
   scenario?: string;
   isActive?: boolean;
-  limit: number;
-  offset: number;
-};
+} & WithSessionUser;
 
-export type DemandsCreateRequest = WithSession & Omit<Demand, 'id' | 'date' | 'recipient' | 'sender'>;
-export type DemandsCreateResponse = { id: string };
-export type DemandsUpdateRequest = WithSession & Omit<Demand, 'recipient' | 'date'>;
+export type DemandsCreateRequest = Omit<Demand, 'id' | 'date'> & WithSessionUser;
+export type DemandsCreateResponse = { id: string } & WithSessionUser;
+export type DemandsUpdateRequest = Omit<Demand, 'date'> & WithSessionUser;

@@ -10,11 +10,11 @@ export interface ApiContractUsers {
   unassignScenario: (request: UsersScenarioRequest) => Promise<void>;
 }
 
-export type UsersCountRequest = { session: string };
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type UsersCountRequest = {};
 export type UsersCountResponse = { count: number };
 
 export type UsersSearchRequest = {
-  session: string;
   q: string;
   login?: string;
   scenario?: string;
@@ -23,5 +23,5 @@ export type UsersSearchRequest = {
 };
 export type UsersSearchResponse = User[];
 
-export type UsersRequest = { session: string; login: string };
-export type UsersScenarioRequest = { session: string; login: string; scenario: string };
+export type UsersRequest = { login: string };
+export type UsersScenarioRequest = { login: string; scenario: string };

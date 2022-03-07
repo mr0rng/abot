@@ -5,4 +5,4 @@ CREATE TABLE "Scenarios" (
   "payload"     JSONB   NOT NULL
 );
 
-CREATE INDEX "idx_Scenarios_FTS" ON "Scenarios" USING GIN (("id" || ' ' || "description") gin_trgm_ops);
+CREATE INDEX "idx_Scenarios_FTS" ON "Scenarios" USING GIN (("id" || ' ' || "description") gin_trgm_ops) WHERE "isDeleted" = FALSE;

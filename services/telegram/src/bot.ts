@@ -5,8 +5,6 @@ import ApiClient, { APIError } from '@abot/api-client';
 import { Config } from "@abot/config";
 import * as tt from 'telegraf/typings/telegram-types';
 import { InputFile, User } from "typegram";
-import { UnexpectedNumberOfRows } from '@abot/dao';
-
 
 class Bot {
   private session: string;
@@ -64,7 +62,7 @@ class Bot {
       ctx.answerInlineQuery(results);
     });
     this.bot.on('callback_query', async ctx => {
-      const user = await this.getOrCreateUser(ctx.callbackQuery.from);
+      await this.getOrCreateUser(ctx.callbackQuery.from);
       // TODO: create demand
       ctx.telegram.sendMessage(ctx.callbackQuery.from.id, 'Your demand is created, someone will reach out to you soon');
     });
@@ -89,6 +87,7 @@ class Bot {
 
   start() {
     this.apiClient.start();
+    // eslint-disable-next-line
     (<any> this.bot).startWebhook(this.botPath, this.tlsOptions, this.botPort, '0.0.0.0');
     this.bot.telegram.setWebhook(this.botUrl, this.webhookExtra);
     
