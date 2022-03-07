@@ -6,7 +6,7 @@ export interface ApiContractDemands {
   create: (request: DemandsCreateRequest) => Promise<DemandsCreateResponse>;
   update: (request: DemandsUpdateRequest) => Promise<Demand>;
   close: (request: DemandsCloseRequest) => Promise<void>;
-  next: (request: WithSession) => Promise<Demand>;
+  next: (request: WithSessionUser) => Promise<Demand>;
   participants: {
     add: (request: DemandsAddParticipantRequest & WithSession) => Promise<void>;
     remove: (request: DemandsRemoveParticipantRequest & WithSession) => Promise<void>;

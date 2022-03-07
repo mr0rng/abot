@@ -9,7 +9,7 @@ import {
   DemandsSearchRequest,
   DemandsUpdateRequest,
 } from '@abot/api-contract/target/demands';
-import { Demand, SearchRequest, WithSession } from '@abot/model';
+import { Demand, SearchRequest, WithSession, WithSessionUser } from '@abot/model';
 
 import APIClient from '.';
 
@@ -36,7 +36,7 @@ export default class APIClientDemands implements ApiContractDemands {
     return this.apiClient.execute('demands.close', request);
   }
 
-  next(request: WithSession): Promise<Demand> {
+  next(request: WithSessionUser): Promise<Demand> {
     return this.apiClient.execute('demands.next', request);
   }
 
