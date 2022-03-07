@@ -1,5 +1,5 @@
 import ApiClient from '@abot/api-client';
-import config from '@abot/config';
+import config, { Config } from '@abot/config';
 import TestsDAO from '@abot/dao/target/tests';
 import { User } from '@abot/model';
 
@@ -7,12 +7,14 @@ import Application from '../src/app';
 import { TestSessionDAO } from '../src/sessions';
 
 export class TestsEnv {
+  public config: Config;
   public application: Application = undefined as unknown as Application;
   public dao: TestsDAO = undefined as unknown as TestsDAO;
   public client: ApiClient = undefined as unknown as ApiClient;
   public sessions: TestSessionDAO = undefined as unknown as TestSessionDAO;
 
   async start() {
+    this.config = config;
     this.application = new Application(config);
     this.dao = new TestsDAO(config);
     this.client = new ApiClient(config);

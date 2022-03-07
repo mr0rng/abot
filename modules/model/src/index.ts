@@ -18,7 +18,9 @@ export type UserWeb = UserBase & {
 
 export type UserTelegram = UserBase & {
   type: 'telegram';
-  payload: Record<string, unknown>;
+  payload: {
+    telegramId: string;
+  } & Record<string, unknown>;
 };
 
 export type User = UserWeb | UserTelegram;
