@@ -1,18 +1,18 @@
-import { DemandsCreateRequest, DemandsCreateResponse } from '@abot/api-contract/target/demands';
-
-import {ApplicationError, Command, ForbiddenError} from '..';
-import Application from '../../app';
 import { v4 } from 'uuid';
 
+import { DemandsCreateRequest, DemandsCreateResponse } from '@abot/api-contract/target/demands';
+
+import { ApplicationError, Command, ForbiddenError } from '..';
+import Application from '../../app';
 
 export default new Command<DemandsCreateRequest, DemandsCreateResponse>(
   'demands.create',
   async (app: Application, request: DemandsCreateRequest): Promise<DemandsCreateResponse> => {
     const INITIAL_STATUS = 'active';
-    
+
     try {
       const id = v4();
-      
+
       const args = [
         id,
         request.title,
@@ -22,7 +22,7 @@ export default new Command<DemandsCreateRequest, DemandsCreateResponse>(
         request.payload,
         request.sessionUser,
       ];
-      
+
       const sql = `
         WITH "CreatedDemand" AS (
           INSERT INTO "Demands" ("id", "title", "description", "date", "scenario", "status", "payload")
@@ -31,7 +31,7 @@ export default new Command<DemandsCreateRequest, DemandsCreateResponse>(
         INSERT INTO "Participants" ("demand", "user", "type", "payload")
         VALUES ($1, $7, 'recipient', '{}'::JSONB)
       `;
-      
+
       await app.dao.execute(sql, args);
       return { id };
     } catch (e) {
@@ -51,8 +51,8 @@ export default new Command<DemandsCreateRequest, DemandsCreateResponse>(
       description: { type: 'string' },
       scenario: { type: 'string' },
       payload: { type: 'object' },
-      sessionUser:  { type: 'string' },
-      isSessionUserIsAdmin:  { type: 'boolean' },
+      sessionUser: { type: 'string' },
+      isSessionUserIsAdmin: { type: 'boolean' },
     },
     required: ['title', 'description', 'scenario', 'sessionUser', 'isSessionUserIsAdmin'],
     additionalProperties: false,
