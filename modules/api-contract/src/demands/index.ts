@@ -40,6 +40,6 @@ export type DemandsSearchRequest = {
   isActive?: boolean;
 } & WithSessionUser;
 
-export type DemandsCreateRequest = Omit<Demand, 'id' | 'date'> & WithSessionUser;
-export type DemandsCreateResponse = { id: string } & WithSessionUser;
+export type DemandsCreateRequest = Omit<Demand, 'id' | 'date' | 'status'> & WithSessionUser;
+export type DemandsCreateResponse = { id: string };
 export type DemandsUpdateRequest = Omit<Demand, 'date'> & WithSessionUser;

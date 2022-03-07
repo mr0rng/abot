@@ -44,7 +44,7 @@ export type Demand = {
   payload: object;
 };
 
-export type ParticipantTypes = 'participant' | 'donor';
+export type ParticipantTypes = 'recipient' | 'donor';
 
 export type Participants = {
   demand: string;
