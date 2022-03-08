@@ -9,13 +9,8 @@ import Application from '../../../app';
 export default new Command<TelegramUserSignUpRequest, UserGetResponse>(
   'user.telegram.signUp',
   async ({ dao, sessions }: Application, request: TelegramUserSignUpRequest): Promise<UserGetResponse> => {
-    const admin = await sessions.get(request.session);
-    if (admin == null || !admin.isAdmin) {
-      throw new ApplicationError(403, 'Forbidden');
-    }
-
     try {
-      await dao.executeOne(
+      const { id } = await dao.executeOne(
         `
           INSERT INTO "Users" ("id", "login", "type", "payload") 
           VALUES ($1, $2, $3, $4) 
@@ -24,6 +19,7 @@ export default new Command<TelegramUserSignUpRequest, UserGetResponse>(
         [v4(), request.login, 'telegram', JSON.stringify({ telegramId: request.telegramId })],
       );
       return {
+        id,
         login: request.login,
         type: 'telegram',
         isAdmin: false,
@@ -39,11 +35,10 @@ export default new Command<TelegramUserSignUpRequest, UserGetResponse>(
   {
     type: 'object',
     properties: {
-      session: { type: 'string' },
       login: { type: 'string' },
       telegramId: { type: 'string' },
     },
-    required: ['session', 'login', 'telegramId'],
+    required: ['login', 'telegramId'],
     additionalProperties: false,
   },
 );

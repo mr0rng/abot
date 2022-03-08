@@ -12,6 +12,7 @@ export interface ApiContractUser {
 export type UserGetRequest = WithSession;
 
 export type UserGetResponse = {
+  id?: string;
   login: string;
   type: string;
   isAdmin: boolean;
