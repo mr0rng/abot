@@ -39,6 +39,10 @@ Stop dev environment.
 
 Apply migrations.
 
+#### fixtures
+
+Create test data in the database.
+
 #### test
 
 Run tests.
