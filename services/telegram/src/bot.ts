@@ -8,12 +8,12 @@ import { InputFile, User } from "typegram";
 
 class Bot {
   private session: string;
-  private tlsOptions: TlsOptions;
+  private tlsOptions: TlsOptions = null;
   private apiClient: ApiClient;
   private token: string;
   private botPath: string;
   private botUrl: string;
-  private webhookExtra: tt.ExtraSetWebhook;
+  private webhookExtra: tt.ExtraSetWebhook = {};
   private botPort: number;
   private bot: Telegraf;
 
@@ -26,14 +26,18 @@ class Bot {
 
   private initBotOptions(config: Config) {
     this.token = config.telegram.bot_token;
-    this.tlsOptions = {
-      key: readFileSync(config.telegram.bot_key_file),
-      cert: readFileSync(config.telegram.bot_cert_file)
-    };
+    // this.tlsOptions = {
+    //   key: readFileSync(config.telegram.bot_key_file),
+    //   cert: readFileSync(config.telegram.bot_cert_file)
+    // };
     this.botPort = config.telegram.bot_port;
     this.botPath = '/' + this.token;
-    this.botUrl = `https://${config.telegram.bot_host}:${this.botPort}${this.botPath}`;
-    this.webhookExtra = {certificate: {source: this.tlsOptions.cert} as InputFile};
+    let host = `https://${config.telegram.bot_host}:${this.botPort}`;
+    if (config.telegram.bot_tunnel !== undefined) {
+      host = config.telegram.bot_tunnel;
+    }
+    this.botUrl = `${host}${this.botPath}`;
+    // this.webhookExtra = {certificate: {source: this.tlsOptions.cert} as InputFile};
   }
 
   private initBot() {
@@ -42,15 +46,16 @@ class Bot {
     this.bot.help((ctx) => ctx.reply('Send me a sticker'));
     this.bot.on('inline_query', async ctx => {
       const scenarios = await this.apiClient.scenarios.search(
-        {session: this.session, q: ctx.inlineQuery.query, limit: 10, offset: 0}
+        {q: ctx.inlineQuery.query, limit: 10, offset: 0}
       );
 
-      const results = scenarios.map((scenario) => ({
-        id: scenario.id,
+      const results = scenarios.map((scenario, id) => ({
+        id,
         type: 'article',
-        title: scenario.description,
+        title: scenario.id,
+        description: scenario.description,
         input_message_content: {
-          message_text: scenario.description
+          message_text: scenario.id
         },
         reply_markup: {
           inline_keyboard: [[{
