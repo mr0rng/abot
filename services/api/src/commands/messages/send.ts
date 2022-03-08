@@ -1,16 +1,17 @@
-import { MessageSendResponse, MessageSendRequest } from '@abot/api-contract/target/messages';
-
-import {ApplicationError, Command, ForbiddenError} from '..';
-import Application from '../../app';
-import {UnexpectedNumberOfRows} from "@abot/dao";
 import { v4 } from 'uuid';
+
+import { MessageSendRequest, MessageSendResponse } from '@abot/api-contract/target/messages';
+import { UnexpectedNumberOfRows } from '@abot/dao';
+
+import { ApplicationError, Command, ForbiddenError } from '..';
+import Application from '../../app';
 
 export default new Command<MessageSendRequest, MessageSendResponse>(
   'messages.send',
   async (app: Application, request: MessageSendRequest): Promise<MessageSendResponse> => {
-    return request.isSessionUserIsAdmin ?
-      sendAdminMessage(app, request.demand, request.sessionUser, request.type, request.payload):
-      sendCommonMessage(app, request.demand, request.sessionUser, request.type, request.payload);
+    return request.isSessionUserIsAdmin
+      ? sendAdminMessage(app, request.demand, request.sessionUser, request.type, request.payload)
+      : sendCommonMessage(app, request.demand, request.sessionUser, request.type, request.payload);
   },
   {
     type: 'object',
@@ -23,12 +24,15 @@ export default new Command<MessageSendRequest, MessageSendResponse>(
     },
     required: ['sessionUser', 'isSessionUserIsAdmin', 'demand', 'type', 'payload'],
     additionalProperties: false,
-  }
+  },
 );
 
-
 const sendCommonMessage = async (
-  app: Application, demand: string, user: string, type: string, payload: Record<string, any>
+  app: Application,
+  demand: string,
+  user: string,
+  type: string,
+  payload: Record<string, any>,
 ): Promise<MessageSendResponse> => {
   const sql = `
     INSERT INTO "Messages" ("id", "date", "demand", "author", "type", "payload")
@@ -52,17 +56,21 @@ const sendCommonMessage = async (
     }
     throw e;
   }
-}
+};
 
 const sendAdminMessage = async (
-  app: Application, demand: string, user: string, type: string, payload: Record<string, any>
+  app: Application,
+  demand: string,
+  user: string,
+  type: string,
+  payload: Record<string, any>,
 ): Promise<MessageSendResponse> => {
   const sql = `
     INSERT INTO "Messages" ("id", "date", "demand", "author", "type", "payload")
     VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, $5)
     RETURNING "id", "date";
   `;
-  
+
   try {
     return await app.dao.executeOne(sql, [v4(), demand, user, type, payload]);
   } catch (e) {

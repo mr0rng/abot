@@ -1,4 +1,4 @@
-import {Demand, Scenario, User, Participant } from '@abot/model';
+import { Demand, Participant, Scenario, User } from '@abot/model';
 
 export const Scenarios: Scenario[] = [
   {
@@ -78,4 +78,4 @@ export const Participants: Participant[] = [
     type: 'donor',
     payload: {},
   },
-]
+];
