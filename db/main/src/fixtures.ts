@@ -29,13 +29,13 @@ const Users: User[] = [
 
 const Scenarios: Scenario[] = [
   {
-    id: 'serv1',
+    id: 'Location/Service',
     description: '',
     isDeleted: false,
     payload: {},
   },
   {
-    id: 'serv2',
+    id: 'Локация/Сервис',
     description: 'ddddx2',
     isDeleted: false,
     payload: {},
@@ -48,7 +48,7 @@ const Demands: Demand[] = [
     title: 'title',
     description: 'we provide a service in location',
     date: '2022-03-02T14:39:26.403Z',
-    scenario: 'serv1',
+    scenario: 'Location/Service',
     status: 'active',
     payload: {},
   },
@@ -57,7 +57,7 @@ const Demands: Demand[] = [
     title: 'qqqqq',
     description: 'anthr lct',
     date: '2022-03-03T14:39:26.403Z',
-    scenario: 'serv2',
+    scenario: 'Локация/Сервис',
     status: 'active',
     payload: {},
   },
@@ -66,7 +66,7 @@ const Demands: Demand[] = [
     title: 'wwwwww',
     description: 'srvc лок',
     date: '2022-03-04T14:39:26.403Z',
-    scenario: 'serv1',
+    scenario: 'Location/Service',
     status: 'active',
     payload: {},
   },
@@ -75,7 +75,7 @@ const Demands: Demand[] = [
     title: 'eeeeee',
     description: 'anthr лок',
     date: '2022-03-05T14:39:26.403Z',
-    scenario: 'serv2',
+    scenario: 'Локация/Сервис',
     status: 'closed',
     payload: {},
   },
@@ -83,6 +83,7 @@ const Demands: Demand[] = [
 
 (async () => {
   const dao = new TestsDAO(config);
+  await dao.clear();
   await dao.prepareDB({
     Users,
     Scenarios,
