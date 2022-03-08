@@ -1,38 +1,65 @@
-import { DemandsCreateResponse, DemandsUpdateRequest } from '@abot/api-contract/target/demands';
+import { DemandsUpdateRequest } from '@abot/api-contract/target/demands';
+import { Demand } from '@abot/model';
 
-import { ApplicationError, Command } from '..';
+import { Command, NotFoundError } from '..';
 import Application from '../../app';
-import DemandsModel, { DemandNotFoundError } from '../../models/demand-model';
-import { ensureAdminUser } from '../utils/checkSession';
 
-export default new Command<DemandsUpdateRequest, DemandsCreateResponse>(
+export default new Command<DemandsUpdateRequest, Demand>(
   'demands.update',
-  async (app: Application, request: DemandsUpdateRequest): Promise<DemandsCreateResponse> => {
-    const demandsModel = new DemandsModel(app.dao);
+  async (app: Application, request: DemandsUpdateRequest): Promise<Demand> => {
+    const { id, sessionUser, isSessionUserIsAdmin, ...options } = request;
 
-    const { id, session, ...options } = request;
+    const params: unknown[] = [];
 
-    await ensureAdminUser(app, session);
+    const set_string = Object.keys(options)
+      .map((field_name) => {
+        params.push(options[field_name]);
+        return `"${field_name}" = $${params.length}`;
+      })
+      .join(', ');
 
-    try {
-      return demandsModel.update(id, options);
-    } catch (e) {
-      if (e instanceof DemandNotFoundError) {
-        throw new ApplicationError(404, 'Demand not found.');
-      }
-      throw e;
+    let where;
+    params.push(id);
+
+    if (!isSessionUserIsAdmin) {
+      params.push(sessionUser);
+      where = `
+        "id" = $${params.length - 1}
+        AND
+        EXISTS(
+          SELECT "demand"
+          FROM "Participants"
+          WHERE
+            "demand" = $${params.length - 1}
+            AND
+            "user" = $${params.length}
+        )`;
+    } else {
+      where = `"id" = $${params.length}`;
     }
+
+    const sql = `UPDATE "Demands" SET ${set_string} WHERE ${where} RETURNING *;`;
+
+    const result = await app.dao.execute(sql, params);
+
+    if (result.rowCount != 1) {
+      throw new NotFoundError();
+    }
+
+    return result.rows[0] as Demand;
   },
   {
     type: 'object',
     properties: {
-      session: { type: 'string' },
+      sessionUser: { type: 'string' },
+      isSessionUserIsAdmin: { type: 'boolean' },
       id: { type: 'string' },
+      title: { type: 'string' },
+      description: { type: 'string' },
       scenario: { type: 'string' },
-      isActive: { type: 'boolean' },
       payload: { type: 'object' },
     },
-    required: ['id', 'session'],
+    required: ['id', 'sessionUser', 'isSessionUserIsAdmin'],
     additionalProperties: false,
   },
 );

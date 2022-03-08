@@ -44,10 +44,12 @@ export type Demand = {
   payload: object;
 };
 
+export type ParticipantTypes = 'recipient' | 'donor' | 'declined_donor';
+
 export type Participants = {
   demand: string;
   user: string;
-  type: string;
+  type: ParticipantTypes;
   payload: Record<string, unknown>;
 };
 
@@ -57,11 +59,6 @@ export type Message = {
   author: string;
   type: string;
   payload: string;
-};
-
-export type Decline = {
-  sender: string;
-  demand: string;
 };
 
 export type SearchRequest = {

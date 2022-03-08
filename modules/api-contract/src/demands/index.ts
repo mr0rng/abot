@@ -4,9 +4,9 @@ export interface ApiContractDemands {
   count: (request: DemandsSearchRequest) => Promise<DemandsCountResponse>;
   search: (request: DemandsSearchRequest & SearchRequest) => Promise<Demand[]>;
   create: (request: DemandsCreateRequest) => Promise<DemandsCreateResponse>;
-  update: (request: DemandsUpdateRequest) => Promise<void>;
+  update: (request: DemandsUpdateRequest) => Promise<Demand>;
   close: (request: DemandsCloseRequest) => Promise<void>;
-  next: (request: WithSession) => Promise<Demand>;
+  next: (request: WithSessionUser) => Promise<Demand>;
   participants: {
     add: (request: DemandsAddParticipantRequest & WithSession) => Promise<void>;
     remove: (request: DemandsRemoveParticipantRequest & WithSession) => Promise<void>;
@@ -24,7 +24,7 @@ export type DemandsRemoveParticipantRequest = {
 
 export type DemandsCloseRequest = {
   id: string;
-};
+} & WithSessionUser;
 
 export type DemandsCountResponse = {
   active: number;
@@ -40,6 +40,12 @@ export type DemandsSearchRequest = {
   isActive?: boolean;
 } & WithSessionUser;
 
-export type DemandsCreateRequest = Omit<Demand, 'id' | 'date'> & WithSessionUser;
-export type DemandsCreateResponse = { id: string } & WithSessionUser;
-export type DemandsUpdateRequest = Omit<Demand, 'date'> & WithSessionUser;
+export type DemandsCreateRequest = Omit<Demand, 'id' | 'date' | 'status'> & WithSessionUser;
+export type DemandsCreateResponse = { id: string };
+export type DemandsUpdateRequest = {
+  id: string;
+  title?: string;
+  description?: string;
+  scenario?: string;
+  payload?: object;
+} & WithSessionUser;

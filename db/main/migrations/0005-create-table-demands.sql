@@ -9,5 +9,5 @@ CREATE TABLE "Demands" (
 );
 
 CREATE INDEX "idx_Demands_FTS" ON "Demands" USING GIN (("title" || ' ' || "description") gin_trgm_ops);
-CREATE INDEX "idx_Demands_scenario" ON "Demands" ("scenario") WHERE "status" != 'closed';
+CREATE INDEX "idx_Demands_scenario" ON "Demands" ("scenario", "date", "id") WHERE "status" = 'active';
 CREATE INDEX "idx_Demands_status" ON "Demands" ("status");

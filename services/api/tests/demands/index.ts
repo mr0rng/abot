@@ -1,3 +1,4 @@
+import { UserScenario } from '@abot/dao/target/tests';
 import { Demand, Scenario, User } from '@abot/model';
 
 export const Scenarios: Scenario[] = [
@@ -11,6 +12,12 @@ export const Scenarios: Scenario[] = [
     id: 'serv2',
     description: 'ddddx2',
     isDeleted: false,
+    payload: {},
+  },
+  {
+    id: 'serv3',
+    description: 'ddddx2',
+    isDeleted: true,
     payload: {},
   },
 ];
@@ -29,7 +36,7 @@ export const Demands: Demand[] = [
     id: 'Location/Another',
     title: 'qqqqq',
     description: 'anthr lct',
-    date: '2022-03-03T14:39:26.403Z',
+    date: '2022-03-03T14:39:26.404Z',
     scenario: 'serv2',
     status: 'active',
     payload: {},
@@ -86,4 +93,17 @@ export const Users: User[] = [
       a: 12,
     },
   },
+  {
+    id: 'tst2',
+    login: 'tstlgn42',
+    type: 'web',
+    isAdmin: false,
+    isBanned: false,
+    payload: {
+      privateKeys: { passwordHash: 'testasgas' },
+      a: 12,
+    },
+  },
 ];
+
+export const UsersScenarios: UserScenario[] = [{ scenario: 'serv1', user: 'tstusr' }];
