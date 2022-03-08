@@ -8,12 +8,7 @@ import Application from '../../../app';
 
 export default new Command<TelegramUserGetRequest, UserGetResponse>(
   'user.telegram.get',
-  async (app: Application, { session, telegramId }: TelegramUserGetRequest): Promise<UserGetResponse> => {
-    const admin = await app.sessions.get(session);
-    if (admin == null || !admin.isAdmin) {
-      throw new ApplicationError(403, 'Forbidden');
-    }
-
+  async (app: Application, { telegramId }: TelegramUserGetRequest): Promise<UserGetResponse> => {
     try {
       const user = await app.dao.executeOne<User>(
         `
@@ -30,6 +25,7 @@ export default new Command<TelegramUserGetRequest, UserGetResponse>(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { privateKeys: _, ...payload } = user.payload;
       return {
+        id: user.id,
         login: user.login,
         type: user.type,
         isAdmin: user.isAdmin,
@@ -46,10 +42,9 @@ export default new Command<TelegramUserGetRequest, UserGetResponse>(
   {
     type: 'object',
     properties: {
-      session: { type: 'string' },
       telegramId: { type: 'string' },
     },
-    required: ['session', 'telegramId'],
+    required: ['telegramId'],
     additionalProperties: false,
   },
 );

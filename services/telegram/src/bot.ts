@@ -5,15 +5,16 @@ import ApiClient, { APIError } from '@abot/api-client';
 import { Config } from "@abot/config";
 import * as tt from 'telegraf/typings/telegram-types';
 import { InputFile, User } from "typegram";
+import { UserTelegram } from "../../api/node_modules/@abot/model/target";
 
 class Bot {
   private session: string;
-  private tlsOptions: TlsOptions;
+  private tlsOptions: TlsOptions = null;
   private apiClient: ApiClient;
   private token: string;
   private botPath: string;
   private botUrl: string;
-  private webhookExtra: tt.ExtraSetWebhook;
+  private webhookExtra: tt.ExtraSetWebhook = {};
   private botPort: number;
   private bot: Telegraf;
 
@@ -26,14 +27,18 @@ class Bot {
 
   private initBotOptions(config: Config) {
     this.token = config.telegram.bot_token;
-    this.tlsOptions = {
-      key: readFileSync(config.telegram.bot_key_file),
-      cert: readFileSync(config.telegram.bot_cert_file)
-    };
+    // this.tlsOptions = {
+    //   key: readFileSync(config.telegram.bot_key_file),
+    //   cert: readFileSync(config.telegram.bot_cert_file)
+    // };
     this.botPort = config.telegram.bot_port;
     this.botPath = '/' + this.token;
-    this.botUrl = `https://${config.telegram.bot_host}:${this.botPort}${this.botPath}`;
-    this.webhookExtra = {certificate: {source: this.tlsOptions.cert} as InputFile};
+    let host = `https://${config.telegram.bot_host}:${this.botPort}`;
+    if (config.telegram.bot_tunnel !== undefined) {
+      host = config.telegram.bot_tunnel;
+    }
+    this.botUrl = `${host}${this.botPath}`;
+    // this.webhookExtra = {certificate: {source: this.tlsOptions.cert} as InputFile};
   }
 
   private initBot() {
@@ -42,15 +47,16 @@ class Bot {
     this.bot.help((ctx) => ctx.reply('Send me a sticker'));
     this.bot.on('inline_query', async ctx => {
       const scenarios = await this.apiClient.scenarios.search(
-        {session: this.session, q: ctx.inlineQuery.query, limit: 10, offset: 0}
+        {q: ctx.inlineQuery.query, limit: 10, offset: 0}
       );
 
-      const results = scenarios.map((scenario) => ({
-        id: scenario.id,
+      const results = scenarios.map((scenario, id) => ({
+        id,
         type: 'article',
-        title: scenario.description,
+        title: scenario.id,
+        description: scenario.description,
         input_message_content: {
-          message_text: scenario.description
+          message_text: scenario.id
         },
         reply_markup: {
           inline_keyboard: [[{
@@ -62,20 +68,45 @@ class Bot {
       ctx.answerInlineQuery(results);
     });
     this.bot.on('callback_query', async ctx => {
-      await this.getOrCreateUser(ctx.callbackQuery.from);
-      // TODO: create demand
-      ctx.telegram.sendMessage(ctx.callbackQuery.from.id, 'Your demand is created, someone will reach out to you soon');
+      const user = await this.getOrCreateUser(ctx.callbackQuery.from) as UserTelegram;
+      const { id } = await this.apiClient.demands.create({
+        title: ctx.callbackQuery.data + ' demand',
+        description: '',
+        scenario: ctx.callbackQuery.data,
+        sessionUser: user.id,
+        isSessionUserIsAdmin: false,
+        payload: {}
+      });
+      ctx.telegram.sendMessage(
+        user.payload.telegramId, 
+        `Your demand (${id}) is created, someone will reach out to you soon`
+      );
+    });
+    this.bot.command('demands', async ctx => {
+      const user = await this.getOrCreateUser(ctx.message.from) as UserTelegram;
+      // required: ['q', 'sessionUser', 'isSessionUserIsAdmin', 'limit', 'offset'],
+      const results = await this.apiClient.demands.search({
+        q: ctx.message.text.replace('/demands', '').trim(),
+        sessionUser: user.id,
+        isSessionUserIsAdmin: false,
+        limit: 10,
+        offset: 0,
+        my: true
+      });
+      const message = results.map((demand, id) => {
+        return `${id + 1}. ${demand.title} @ ${demand.date}`;
+      }).join("\n");
+      ctx.reply(message);
     });
   }
 
   private async getOrCreateUser(user: User) {
     try {
-      return await this.apiClient.user.telegram.get({session: this.session, telegramId: String(user.id)});
+      return await this.apiClient.user.telegram.get({telegramId: String(user.id)});
     } catch (e) {
       const error = e as APIError;
       if (error.code == 404) {
         return await this.apiClient.user.telegram.signUp({
-          session: this.session,
           login: user.username,
           telegramId: String(user.id)
         });

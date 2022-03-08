@@ -1,4 +1,4 @@
-import { Decline, Demand, Message, Participants, Scenario, User } from '@abot/model';
+import { Demand, Message, Participants, Scenario, User } from '@abot/model';
 
 import DAO from '.';
 
@@ -6,7 +6,6 @@ export default class TestsDAO extends DAO {
   async clear() {
     await this.execute(`
       WITH
-        "declines" AS (DELETE FROM "Declines" RETURNING demand),
         "participants" AS (DELETE FROM "Participants" RETURNING demand),
         "messages" AS (DELETE FROM "Messages" RETURNING date),
         "demands" AS (DELETE FROM "Demands" RETURNING date),
@@ -45,6 +44,5 @@ export type DBData = {
   UsersScenarios?: UserScenario[];
   Demands?: Demand[];
   Messages?: Message[];
-  Declines?: Decline[];
   Participants?: Participants[];
 };

@@ -20,6 +20,7 @@ export class Config {
   telegram = {
     bot_token: process.env.BOT_TOKEN,
     bot_host: process.env.BOT_HOST,
+    bot_tunnel: process.env.BOT_TUNNEL,
     bot_port: parseInt(process.env.BOT_PORT || '0') || 8443,
     bot_cert_file: process.env.BOT_CERT_FILE || 'dev_bot.pem',
     bot_key_file: process.env.BOT_KEY_FILE || 'dev_bot.key',

@@ -6,12 +6,10 @@ export interface ApiContractUserTelegram {
 }
 
 export type TelegramUserGetRequest = {
-  session: string;
   telegramId: string;
 };
 
 export type TelegramUserSignUpRequest = {
-  session: string;
   telegramId: string;
   login: string;
 };
