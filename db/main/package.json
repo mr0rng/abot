@@ -5,12 +5,15 @@
   "main": "index.js",
   "scripts": {
     "migrate": "node target/index.js",
+    "fixtures": "node target/fixtures.js",
     "build": "ts",
     "build:docker": "npm run build && docker-node"
   },
   "dependencies": {
     "@abot/config": "^0.1.0",
+    "@abot/dao": "^0.1.0",
     "@abot/docker-node": "^0.1.0",
+    "@abot/model": "^0.1.0",
     "@abot/ts": "^0.1.0",
     "@types/node": "^17.0.21",
     "@types/pg": "^8.6.4",

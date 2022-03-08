@@ -8,6 +8,7 @@
     "env": "npm run env:network && docker-compose -f ./env.yml up -d",
     "env:down": "docker-compose -f ./env.yml down",
     "migrate": "lerna run migrate",
+    "fixtures": "lerna run fixtures",
     "test": "lerna run test",
     "build": "lerna run build",
     "build:docker": "lerna run build:docker",
