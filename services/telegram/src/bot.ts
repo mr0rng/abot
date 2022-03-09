@@ -7,6 +7,8 @@ import * as tt from 'telegraf/typings/telegram-types';
 import { InputFile, User } from "typegram";
 import { UserTelegram } from "@abot/model";
 import handlers from "./handlers";
+import { JSONCodec, NatsConnection, connect } from 'nats';
+import { MessageNotification } from "../../api/node_modules/@abot/api-contract/src/messages";
 
 class Bot {
   private tlsOptions: TlsOptions = null;
@@ -17,6 +19,8 @@ class Bot {
   private webhookExtra: tt.ExtraSetWebhook = {};
   private botPort: number;
   private bot: Telegraf;
+  private connection?: NatsConnection;
+  private codec = JSONCodec();
 
   constructor(public config: Config) {
     this.apiClient = new ApiClient(config);
@@ -53,24 +57,22 @@ class Bot {
     });
   }
 
-  public async getOrCreateUser(user: User) {
-    try {
-      return await this.apiClient.user.telegram.get({telegramId: String(user.id)});
-    } catch (e) {
-      const error = e as APIError;
-      if (error.code == 404) {
-        return await this.apiClient.user.telegram.signUp({
-          login: user.username,
-          telegramId: String(user.id)
-        });
-      }
-
-      throw e;
-    }
+  public async getUserWithActiveDemands(user: User) {
+    return await this.apiClient.user.telegram.get({
+      login: user.username,
+      telegramId: String(user.id)
+    });
   }
 
-  start() {
+  async start() {
     this.apiClient.start();
+    this.connection = await connect({ servers: this.config.nats.uri });
+    this.connection.closed().then(() => {
+      this.connection = undefined;
+    });
+    this.subscribe();
+    
+
     // eslint-disable-next-line
     (<any> this.bot).startWebhook(this.botPath, this.tlsOptions, this.botPort, '0.0.0.0');
     this.bot.telegram.setWebhook(this.botUrl, this.webhookExtra);
@@ -78,6 +80,25 @@ class Bot {
     // Enable graceful stop
     process.once('SIGINT', () => this.bot.stop('SIGINT'))
     process.once('SIGTERM', () => this.bot.stop('SIGTERM'))
+  }
+
+  private async subscribe() {
+    for await (const message of this.connection.subscribe('messages.notify')) {
+      const notification = this.codec.decode(message.data) as MessageNotification;
+      for (const recipient of notification.recipients) {
+        this.bot.telegram.sendMessage(
+          recipient.payload.telegramId,
+          `<b>Message about request ${notification.demand}</b>
+          from ${notification.sender}\n\n${notification.payload.text}`,
+          { parse_mode: 'HTML' }
+        );
+      }
+      message.respond(
+        this.codec.encode({
+          code: 200
+        }),
+      );
+    }
   }
 };
 

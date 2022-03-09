@@ -6,7 +6,7 @@ export default {
   method: 'command',
   command: 'demands',
   callback: async (ctx, bot: Bot) => {
-    const user = await bot.getOrCreateUser(ctx.message.from) as UserTelegram;
+    const user = await bot.getUserWithActiveDemands(ctx.message.from) as UserTelegram;
     const results = await bot.apiClient.demands.search({
       q: ctx.message.text.replace('/demands', '').trim(),
       sessionUser: user.id,

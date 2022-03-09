@@ -1,5 +1,5 @@
 import { MessageSendResponse } from '@abot/api-contract/target/messages';
-import { Message } from '@abot/model';
+import { Message, User } from '@abot/model';
 
 import { ApplicationError, Command, ForbiddenError } from '..';
 import Application from '../../app';
@@ -15,7 +15,7 @@ export default new Command<Omit<Message, 'date'>, MessageSendResponse>(
         message.payload
       ];
 
-      const sql = `
+      let sql = `
         INSERT INTO "Messages" ("date", "demand", "author", "type", "payload")
         SELECT * FROM ( VALUES (CURRENT_TIMESTAMP, $1, $2, $3, $4::jsonb) )
           AS data (timestamp, varchar, varchar, varchar, jsonb)
@@ -28,7 +28,26 @@ export default new Command<Omit<Message, 'date'>, MessageSendResponse>(
         RETURNING "id", "date";
       `;
 
-      return await app.dao.executeOne(sql, args);
+      const response = await app.dao.executeOne(sql, args);
+
+      sql = `
+        SELECT u."id", u."login", u."type", u."isAdmin", u."isBanned", u."payload" 
+        FROM "Users" u
+          JOIN "Participants" p ON p.user = u.id
+        WHERE
+          p."demand" = $1
+          AND p."user" <> $2
+          AND u."type" = $3
+      `;
+      const { rows } = await app.dao.execute<User[]>(sql, [message.demand, message.author, 'telegram']);
+      app.apiClient.messages.notify({
+        demand: message.demand,
+        sender: message.author,
+        payload: message.payload,
+        recipients: rows
+      });
+
+      return response;
     } catch (e) {
       if (e.constraint === 'Messages_author_fkey') {
         throw new ForbiddenError();

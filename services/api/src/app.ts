@@ -6,23 +6,28 @@ import DAO from '@abot/dao';
 import { ApplicationError, Command } from './commands';
 import commands from './commands/list';
 import SessionDAO from './sessions';
+import APIClient from '@abot/api-client';
 
 class Application {
   private codec = JSONCodec();
   private connection?: NatsConnection;
   public dao: DAO;
   public sessions: SessionDAO;
+  public apiClient: APIClient;
 
   constructor(public config: Config) {
     this.dao = new DAO(config);
     this.sessions = new SessionDAO(config);
+    this.apiClient = new APIClient(config);
   }
 
   async start() {
     this.connection = await connect({ servers: this.config.nats.uri });
     this.connection.closed().then(() => {
       this.connection = undefined;
+      (<any> this.apiClient).connection = undefined;
     });
+    (<any> this.apiClient).connection = this.connection;
 
     await this.sessions.start();
 
@@ -42,6 +47,7 @@ class Application {
 
     await this.connection.close();
     this.connection = undefined;
+    (<any> this.apiClient).connection = undefined;
   }
 
   async subscribe<Requset, Response>(command: Command<Requset, Response>) {

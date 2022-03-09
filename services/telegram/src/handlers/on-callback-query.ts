@@ -7,7 +7,7 @@ export default {
   event: 'callback_query',
   callback: async (ctx, bot: Bot) => {
     const scenarioId = ctx.callbackQuery.data;
-    const user = await bot.getOrCreateUser(ctx.callbackQuery.from) as UserTelegram;
+    const user = await bot.getUserWithActiveDemands(ctx.callbackQuery.from) as UserTelegram;
     const demandId = scenarioId + '/' + user.login;
     const { id } = await bot.apiClient.demands.create({
       id: demandId,
