@@ -40,7 +40,7 @@ export type DemandsSearchRequest = {
   isActive?: boolean;
 } & WithSessionUser;
 
-export type DemandsCreateRequest = Omit<Demand, 'id' | 'date' | 'status'> & WithSessionUser;
+export type DemandsCreateRequest = Omit<Demand, 'date' | 'status'> & WithSessionUser;
 export type DemandsCreateResponse = { id: string };
 export type DemandsUpdateRequest = {
   id: string;
