@@ -12,16 +12,14 @@ export default {
     }
     const { demands, ...user } = await bot.getUserWithActiveDemands(ctx.message.from);
     if (demands.length === 0) {
-      ctx.telegram.sendMessage(
-        user.payload.telegramId,
+      ctx.reply(
         `There is no active demand found for you. Create one by searching for services
            by typing the bot's @username followed by query.`
       );
       return;
     }
     if (demands.length > 1) {
-      ctx.telegram.sendMessage(
-        user.payload.telegramId,
+      ctx.reply(
         `There is more than one active demand found for you. This should not happen.
            We'll fix this shortly.`
       );
@@ -36,8 +34,7 @@ export default {
           sessionUser: user.id,
           isSessionUserIsAdmin: false
         });
-        ctx.telegram.sendMessage(
-          user.payload.telegramId,
+        ctx.reply(
           `Thank you, the description was saved. Someone will be with you shortly.`
         );
         return;
@@ -56,8 +53,7 @@ export default {
       } catch (e) {
         const error = e as ApplicationError;
         if (error.code && error.code == 404) {
-          ctx.telegram.sendMessage(
-            user.payload.telegramId,
+          ctx.reply(
             `Unfortunately, no one has picked up your request yet.`
           );
           return;
