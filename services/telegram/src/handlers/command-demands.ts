@@ -7,7 +7,6 @@ export default {
   command: 'demands',
   callback: async (ctx, bot: Bot) => {
     const user = await bot.getOrCreateUser(ctx.message.from) as UserTelegram;
-    // required: ['q', 'sessionUser', 'isSessionUserIsAdmin', 'limit', 'offset'],
     const results = await bot.apiClient.demands.search({
       q: ctx.message.text.replace('/demands', '').trim(),
       sessionUser: user.id,
@@ -17,7 +16,7 @@ export default {
       my: true
     });
     const message = results.map((demand, id) => {
-      return `${id + 1}. ${demand.title} @ ${demand.date}`;
+      return `${id + 1}. ${demand.title} (${demand.status}) @ ${demand.date}`;
     }).join("\n");
     ctx.reply(message);
   }

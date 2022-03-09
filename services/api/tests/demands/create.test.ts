@@ -17,6 +17,7 @@ afterEach(async () => env.stop());
 const request = {
   sessionUser: 'tstusr',
   isSessionUserIsAdmin: true,
+  id: 'some title',
   title: 'some title',
   description: 'some description',
   scenario: 'serv1',

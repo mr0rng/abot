@@ -54,11 +54,11 @@ export type Participants = {
 };
 
 export type Message = {
-  date: number;
-  demand: number;
+  date: string;
+  demand: string;
   author: string;
   type: string;
-  payload: string;
+  payload: object;
 };
 
 export type SearchRequest = {
