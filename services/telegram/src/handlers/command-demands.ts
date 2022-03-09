@@ -15,9 +15,12 @@ export default {
       offset: 0,
       my: true
     });
-    const message = results.map((demand, id) => {
+    let message = results.map((demand, id) => {
       return `${id + 1}. ${demand.title} (${demand.status}) @ ${demand.date}`;
     }).join("\n");
+    if (message == '') {
+      message = 'You have no demands yet.';
+    }
     ctx.reply(message);
   }
 } as CommandHandler;

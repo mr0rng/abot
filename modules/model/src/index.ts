@@ -46,7 +46,7 @@ export type Demand = {
 
 export type ParticipantTypes = 'recipient' | 'donor' | 'declined_donor';
 
-export type Participants = {
+export type Participant = {
   demand: string;
   user: string;
   type: ParticipantTypes;

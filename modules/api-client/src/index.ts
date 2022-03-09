@@ -6,6 +6,7 @@ import { Config } from '@abot/config';
 import APIClientDemands from './demands';
 import APIClientMessages from './messages';
 import APIClientScenarios from './scenarios';
+import APIClientParticipants from './participants';
 import APIClientUser from './user';
 import APIClientUsers from './users';
 
@@ -16,6 +17,7 @@ export default class APIClient implements ApiContract {
   public demands = new APIClientDemands(this);
   public messages = new APIClientMessages(this);
   public scenarios = new APIClientScenarios(this);
+  public participants = new APIClientParticipants(this);
   public user = new APIClientUser(this);
   public users = new APIClientUsers(this);
 

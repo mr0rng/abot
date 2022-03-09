@@ -1,4 +1,5 @@
 import { UserTelegram } from "@abot/model";
+import { ApplicationError } from "@abot/api/target/commands";
 import Bot from "../bot";
 import { OnHandler } from "../handler";
 
@@ -49,7 +50,27 @@ export default {
       );
       return;
     }
-    // TODO: if demand does not have a sender, reply `no sender yet`
-    // TODO: send message to demand if demand has a sender
+    try {
+      const _ = await bot.apiClient.participants.get({
+        demand: demand.id,
+        type: 'donor'
+      });
+      await bot.apiClient.messages.send({
+        demand: demand.id,
+        author: user.id,
+        type: 'telegram',
+        payload: { text: ctx.message.text }
+      });
+    } catch (e) {
+      const error = e as ApplicationError;
+      if (error.code && error.code == 404) {
+        ctx.telegram.sendMessage(
+          user.payload.telegramId,
+          `Unfortunately, no one has picked up your request yet.`
+        );
+        return;
+      }
+      throw e;
+    }
   }
 } as OnHandler;
