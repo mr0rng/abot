@@ -32,10 +32,10 @@ export default new Command<DemandsCreateRequest, DemandsCreateResponse>(
       await app.dao.execute(sql, args);
       return { id };
     } catch (e) {
-      if (e.constraint === 'Demands_scenario_fkey') {
+      if ((<any> e).constraint === 'Demands_scenario_fkey') {
         throw new ApplicationError(400, 'Wrong scenario');
       }
-      if (e.constraint === 'Participants_user_fkey') {
+      if ((<any> e).constraint === 'Participants_user_fkey') {
         throw new ForbiddenError();
       }
       throw e;

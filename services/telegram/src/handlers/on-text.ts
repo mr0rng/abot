@@ -1,16 +1,18 @@
-import { UserTelegram } from "@abot/model";
 import { ApplicationError } from "@abot/api/target/commands";
 import Bot from "../bot";
 import { OnHandler } from "../handler";
+import { Message } from 'typegram/message'
+import { User } from 'typegram/manage';
 
-export default {
-  method: 'on',
-  event: 'text',
-  callback: async (ctx, bot: Bot) => {
-    if (ctx.message.via_bot && ctx.message.via_bot.username == 'abot_mxposed_test_bot') {
+export default new OnHandler(
+  'on',
+  'text',
+  async (ctx, bot: Bot) => {
+    const message = <Message.TextMessage> ctx.message;
+    if (message.via_bot && message.via_bot.username == 'abot_mxposed_test_bot') {
       return;
     }
-    const { demands, ...user } = await bot.getUserWithActiveDemands(ctx.message.from);
+    const { demands, ...user } = await bot.getUserWithActiveDemands(message.from as User);
     if (demands.length === 0) {
       ctx.reply(
         `There is no active demand found for you. Create one by searching for services
@@ -30,7 +32,7 @@ export default {
       if (demand.description === '') {
         await bot.apiClient.demands.update({
           id: demand.id,
-          description: ctx.message.text,
+          description: message.text,
           sessionUser: user.id,
           isSessionUserIsAdmin: false
         });
@@ -48,7 +50,7 @@ export default {
           demand: demand.id,
           author: user.id,
           type: 'telegram',
-          payload: { text: ctx.message.text }
+          payload: { text: message.text }
         });
       } catch (e) {
         const error = e as ApplicationError;
@@ -66,8 +68,8 @@ export default {
         demand: demand.id,
         author: user.id,
         type: 'telegram',
-        payload: { text: ctx.message.text }
+        payload: { text: message.text }
       });
     }
   }
-} as OnHandler;
+);

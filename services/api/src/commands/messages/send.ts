@@ -1,4 +1,5 @@
 import { MessageSendResponse } from '@abot/api-contract/target/messages';
+import { UnexpectedNumberOfRows } from '@abot/dao';
 import { Message, User } from '@abot/model';
 
 import { ApplicationError, Command, ForbiddenError } from '..';
@@ -28,7 +29,7 @@ export default new Command<Omit<Message, 'date'>, MessageSendResponse>(
         RETURNING "id", "date";
       `;
 
-      const response = await app.dao.executeOne(sql, args);
+      const response = await app.dao.executeOne<MessageSendResponse>(sql, args);
 
       sql = `
         SELECT u."id", u."login", u."type", u."isAdmin", u."isBanned", u."payload" 
@@ -39,7 +40,7 @@ export default new Command<Omit<Message, 'date'>, MessageSendResponse>(
           AND p."user" <> $2
           AND u."type" = $3
       `;
-      const { rows } = await app.dao.execute<User[]>(sql, [message.demand, message.author, 'telegram']);
+      const { rows } = await app.dao.execute<User>(sql, [message.demand, message.author, 'telegram']);
       app.apiClient.messages.notify({
         demand: message.demand,
         sender: message.author,
@@ -49,10 +50,10 @@ export default new Command<Omit<Message, 'date'>, MessageSendResponse>(
 
       return response;
     } catch (e) {
-      if (e.constraint === 'Messages_author_fkey') {
+      if ((<any> e).constraint === 'Messages_author_fkey') {
         throw new ForbiddenError();
       }
-      if (e.isUnexpectedNumberOfRows) {
+      if ((<UnexpectedNumberOfRows> e).isUnexpectedNumberOfRows) {
         throw new ForbiddenError();
       }
       throw e;

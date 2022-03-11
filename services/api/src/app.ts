@@ -50,7 +50,7 @@ class Application {
     (<any> this.apiClient).connection = undefined;
   }
 
-  async subscribe<Requset, Response>(command: Command<Requset, Response>) {
+  async subscribe<Request, Response>(command: Command<Request, Response>) {
     if (this.connection == null) {
       throw new Error('Application was not started');
     }

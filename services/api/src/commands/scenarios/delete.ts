@@ -1,4 +1,5 @@
 import { ScenariosDeleteRequest } from '@abot/api-contract/target/scenarios';
+import { UnexpectedNumberOfRows } from '@abot/dao';
 
 import { ApplicationError, Command } from '..';
 import Application from '../../app';
@@ -21,7 +22,8 @@ export default new Command<ScenariosDeleteRequest, void>(
         [id],
       );
     } catch (e) {
-      if (e.isUnexpectedNumberOfRows) {
+      const err = e as UnexpectedNumberOfRows;
+      if (err.isUnexpectedNumberOfRows) {
         throw new ApplicationError(403, 'Scenario not found');
       }
 

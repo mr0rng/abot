@@ -1,16 +1,18 @@
+import { InlineQuery, InlineQueryResultArticle } from "typegram/inline";
 import Bot from "../bot";
 import { OnHandler } from "../handler";
 
-export default {
-  method: 'on',
-  event: 'inline_query',
-  callback: async (ctx, bot: Bot) => {
+export default new OnHandler(
+  'on',
+  'inline_query',
+  async (ctx, bot: Bot) => {
+    const query = <InlineQuery> ctx.inlineQuery;
     const scenarios = await bot.apiClient.scenarios.search(
-      {q: ctx.inlineQuery.query, limit: 10, offset: 0}
+      {q: query.query, limit: 10, offset: 0}
     );
 
     const results = scenarios.map((scenario, id) => ({
-      id,
+      id: String(id),
       type: 'article',
       title: scenario.id,
       description: scenario.description,
@@ -24,6 +26,6 @@ export default {
         }]]
       }
     }));
-    ctx.answerInlineQuery(results);
+    ctx.answerInlineQuery(results as InlineQueryResultArticle[]);
   }
-} as OnHandler;
+);

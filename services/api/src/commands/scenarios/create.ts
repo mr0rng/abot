@@ -22,7 +22,7 @@ export default new Command<Omit<Omit<Scenario, 'isDeleted'> & WithSessionUser, '
         [id, description, false, JSON.stringify(payload)],
       );
     } catch (e) {
-      if (e.constraint === 'Scenarios_pkey') {
+      if ((<any> e).constraint === 'Scenarios_pkey') {
         throw new ApplicationError(400, 'Scenario already exists');
       }
 

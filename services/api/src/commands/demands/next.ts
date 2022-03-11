@@ -1,4 +1,4 @@
-import { Demand, WithSessionUser } from '@abot/api-contract/target/demands';
+import { Demand, WithSessionUser } from '@abot/model';
 import { UnexpectedNumberOfRows } from '@abot/dao';
 
 import { Command, NotFoundError } from '..';

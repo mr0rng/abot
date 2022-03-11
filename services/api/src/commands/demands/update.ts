@@ -13,12 +13,12 @@ export default new Command<DemandsUpdateRequest, Demand>(
 
     const set_string = Object.keys(options)
       .map((field_name) => {
-        params.push(options[field_name]);
+        params.push((<any> options)[field_name]);
         return `"${field_name}" = $${params.length}`;
       })
       .join(', ');
 
-    let where;
+    let where: string;
     params.push(id);
 
     if (!isSessionUserIsAdmin) {
@@ -54,10 +54,10 @@ export default new Command<DemandsUpdateRequest, Demand>(
       sessionUser: { type: 'string' },
       isSessionUserIsAdmin: { type: 'boolean' },
       id: { type: 'string' },
-      title: { type: 'string' },
-      description: { type: 'string' },
-      scenario: { type: 'string' },
-      payload: { type: 'object' },
+      title: { type: 'string', nullable: true },
+      description: { type: 'string', nullable: true },
+      scenario: { type: 'string', nullable: true },
+      payload: { type: 'object', nullable: true },
     },
     required: ['id', 'sessionUser', 'isSessionUserIsAdmin'],
     additionalProperties: false,

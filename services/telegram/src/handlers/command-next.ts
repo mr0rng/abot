@@ -2,12 +2,15 @@ import { UserWithActiveDemands } from "@abot/api-contract/target/user/telegram/i
 import Bot from "../bot";
 import { CommandHandler } from "../handler";
 import { ApplicationError } from "@abot/api/src/commands";
+import { Message } from 'typegram/message'
+import { User } from 'typegram/manage';
 
-export default {
-  method: 'command',
-  command: 'next',
-  callback: async (ctx, bot: Bot) => {
-    const user = await bot.getUserWithActiveDemands(ctx.message.from) as UserWithActiveDemands;
+export default new CommandHandler(
+  'command',
+  'next',
+  async (ctx, bot: Bot) => {
+    const message = <Message.TextMessage> ctx.message;
+    const user = await bot.getUserWithActiveDemands(message.from as User) as UserWithActiveDemands;
     if (user.demands.length > 0) {
       ctx.reply('You have an active request right now. Please complete it before serving the next.');
       return;
@@ -25,4 +28,4 @@ export default {
       }
     }
   }
-} as CommandHandler;
+);

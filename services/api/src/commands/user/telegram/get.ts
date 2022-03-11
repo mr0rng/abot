@@ -1,16 +1,20 @@
-import { TelegramUserGetRequest } from '@abot/api-contract/src/user/telegram';
-import { UserGetResponse } from '@abot/api-contract/target/user';
-import { UnexpectedNumberOfRows } from '@abot/dao';
-import { User } from '@abot/model';
+import { TelegramUserGetRequest, UserWithActiveDemands } from '@abot/api-contract/target/user/telegram';
+import { ParticipantTypes, User } from '@abot/model';
 
 import { ApplicationError, Command } from '../..';
 import Application from '../../../app';
 
-export default new Command<TelegramUserGetRequest, UserGetResponse>(
+declare type UserDemandRole = User & {
+  demand: string;
+  role: ParticipantTypes;
+  description: string;
+};
+
+export default new Command<TelegramUserGetRequest, UserWithActiveDemands>(
   'user.telegram.get',
-  async (app: Application, { telegramId, login }: TelegramUserGetRequest): Promise<UserGetResponse> => {
+  async (app: Application, { telegramId, login }: TelegramUserGetRequest): Promise<UserWithActiveDemands> => {
     const id = `telegram:${login || telegramId}`;
-    const { rows } = await app.dao.execute(
+    const { rows } = await app.dao.execute<UserDemandRole>(
       `
         WITH
         "ExistingUser" AS (
@@ -56,6 +60,7 @@ export default new Command<TelegramUserGetRequest, UserGetResponse>(
       login: user.login,
       type: user.type,
       isAdmin: user.isAdmin,
+      isBanned: false,
       payload,
       demands: demands
     };
@@ -64,9 +69,9 @@ export default new Command<TelegramUserGetRequest, UserGetResponse>(
     type: 'object',
     properties: {
       telegramId: { type: 'string' },
-      login: { type: 'string' }
+      login: { type: 'string', nullable: true }
     },
-    required: ['telegramId', 'login'],
+    required: ['telegramId'],
     additionalProperties: false,
   },
 );

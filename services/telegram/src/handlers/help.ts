@@ -14,9 +14,9 @@ If you can provide any help, please message to the admins to register that.
 Then, use command /next to assign the next request to you and coordinate
 with the person in need.`;
 
-export default {
-  method: 'help',
-  callback: ctx => {
+export default new Handler(
+  'help',
+  ctx => {
     ctx.reply(helpMessage);
   }
-} as Handler;
+);

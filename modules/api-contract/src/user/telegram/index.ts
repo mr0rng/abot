@@ -8,7 +8,7 @@ export interface ApiContractUserTelegram {
 
 export type TelegramUserGetRequest = {
   telegramId: string;
-  login: string;
+  login?: string;
 };
 
 export type TelegramUserSignUpRequest = {
@@ -17,5 +17,5 @@ export type TelegramUserSignUpRequest = {
 };
 
 export type UserWithActiveDemands = User & {
-  demands: (Demand & { role: ParticipantTypes })[]
+  demands: (Omit<Demand, 'title' | 'date' | 'scenario' | 'status' | 'payload'> & { role: ParticipantTypes })[]
 };

@@ -5,9 +5,9 @@ const startMessage =
 Text /help for more information, or go and search for what you need by
 typing the bot's @username and query in this chat`;
 
-export default {
-  method: 'start',
-  callback: ctx => {
+export default new Handler(
+  'start',
+  ctx => {
     ctx.reply(startMessage);
   }
-} as Handler;
+);
