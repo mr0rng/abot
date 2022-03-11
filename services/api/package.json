@@ -28,7 +28,10 @@
     "ajv": "8.10.0",
     "jest": "27.5.1",
     "nats": "2.6.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "dotenv": "^16.0.0",
+    "pg": "8.7.3",
+    "ioredis": "^4.28.5"
   },
   "docker": {
     "imageName": "abot/api"

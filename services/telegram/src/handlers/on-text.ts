@@ -1,4 +1,3 @@
-import { ApplicationError } from "@abot/api/target/commands";
 import Bot from "../bot";
 import { OnHandler } from "../handler";
 import { Message } from 'typegram/message'
@@ -53,8 +52,7 @@ export default new OnHandler(
           payload: { text: message.text }
         });
       } catch (e) {
-        const error = e as ApplicationError;
-        if (error.code && error.code == 404) {
+        if ((e as { code?: number }).code == 404) {
           ctx.reply(
             `Unfortunately, no one has picked up your request yet.`
           );

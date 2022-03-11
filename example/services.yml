@@ -1,0 +1,19 @@
+version: "3.9"
+   
+services:  
+  abot_api:
+    hostname: "abot_api"
+    container_name: "abot_api"
+    image: "abot/api:latest"
+    env_file:
+      - main.env
+
+  # abot_telegram:
+  #   hostname: "abot_telegram"
+  #   container_name: "abot_telegram"
+  #   image: "abot/telegram:latest"
+
+networks:
+  default:
+    external:
+      name: abot_example_network

@@ -1,0 +1,14 @@
+version: "3.9"
+   
+services:
+  abot_api:
+    hostname: "abot_migrations"
+    container_name: "abot_migrations"
+    image: "abot/migrations-main:latest"
+    env_file:
+      - main.env
+
+networks:
+  default:
+    external:
+      name: abot_example_network

@@ -70,6 +70,7 @@ Build all packages.
 | DB_MAIN_POOL_SIZE | 10                                               |
 | NATS              | localhost:6222                                   |
 | API_TIMEOUT       | 5000                                             |
+| SESSIONS          | localhost:7001                                   |
 | BOT_TOKEN         |                                                  |
 | BOT_HOST          |                                                  |
 | BOT_PORT          | 8443                                             |

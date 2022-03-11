@@ -33,7 +33,7 @@ class Application {
 
     await Promise.all(
       commands.map((command) => {
-        this.subscribe(command);
+        this.subscribe(command as Command<{}, {}>);
       }),
     );
   }
