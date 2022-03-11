@@ -1,5 +1,6 @@
 node_modules
 target
+target-docker
 lerna-debug.log
 services/telegram/.env
 services/api/.env
