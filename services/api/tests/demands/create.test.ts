@@ -1,4 +1,4 @@
-import { Demand, Participants } from '@abot/model';
+import { Demand, Participant } from '@abot/model';
 
 import { Scenarios, Users } from '.';
 import { TestsEnv } from '..';
@@ -17,6 +17,7 @@ afterEach(async () => env.stop());
 const request = {
   sessionUser: 'tstusr',
   isSessionUserIsAdmin: true,
+  id: 'some title',
   title: 'some title',
   description: 'some description',
   scenario: 'serv1',
@@ -28,7 +29,7 @@ test('can create', async () => {
   const demand = (await env.dao.executeOne(`SELECT * FROM "Demands" WHERE "id"=$1;`, [result.id])) as Demand;
   const participant = (await env.dao.executeOne(`SELECT * FROM "Participants" WHERE "demand"=$1;`, [
     result.id,
-  ])) as Participants;
+  ])) as Participant;
   expect(demand.title).toBe(request.title);
   expect(demand.scenario).toBe(request.scenario);
   expect(demand.payload).toStrictEqual(request.payload);

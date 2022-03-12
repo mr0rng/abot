@@ -2,8 +2,8 @@ import { TestsEnv } from '..';
 
 const env = new TestsEnv();
 
-beforeEach(() => env.start());
-afterEach(() => env.stop());
+beforeEach(async () => env.start());
+afterEach(async () => env.stop());
 
 test('search', async () => {
   await env.dao.prepareDB({

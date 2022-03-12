@@ -12,6 +12,7 @@
     "devDependencies": {
       "@abot/api-client": "^0.1.0",
       "@abot/api-contract": "^0.1.0",
+      "@abot/docker-node": "^0.1.0",
       "@abot/key-value-client": "^0.1.0",
       "@abot/ts": "^0.1.0",
       "@babel/preset-env": "7.16.11",
@@ -29,7 +30,8 @@
       "jest": "27.5.1",
       "nats": "2.6.1",
       "uuid": "^8.3.2",
-      "telegraf": "4.7.0"
+      "telegraf": "4.7.0",
+      "typegram": "^3.8.0"
     },
     "docker": {
       "imageName": "abot/telegram"

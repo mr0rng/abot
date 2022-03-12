@@ -17,11 +17,15 @@
     "@abot/ts": "^0.1.0",
     "@types/node": "^17.0.21",
     "@types/pg": "^8.6.4",
+    "dotenv": "^16.0.0",
     "pg": "8.7.3",
     "postgres-migrations": "5.3.0"
   },
   "docker": {
-    "imageName": "abot/migrations-main"
+    "imageName": "abot/migrations-main",
+    "resources": [
+      "migrations"
+    ]
   },
   "author": "",
   "license": "ISC"

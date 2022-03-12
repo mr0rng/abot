@@ -1,3 +1,4 @@
+import { UnexpectedNumberOfRows } from '@abot/dao';
 import { Scenario, WithSessionUser } from '@abot/model';
 
 import { ApplicationError, Command } from '..';
@@ -24,7 +25,8 @@ export default new Command<Omit<Scenario, 'isDeleted'> & WithSessionUser, void>(
         [id, description, JSON.stringify(payload)],
       );
     } catch (e) {
-      if (e.isUnexpectedNumberOfRows) {
+      const err = e as UnexpectedNumberOfRows;
+      if (err.isUnexpectedNumberOfRows) {
         throw new ApplicationError(403, 'Scenario not found');
       }
 

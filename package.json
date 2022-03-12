@@ -5,8 +5,13 @@
   "main": "index.js",
   "scripts": {
     "env:network": "docker network inspect abot_network >/dev/null 2>&1 || docker network create abot_network",
+    "example:network": "docker network inspect abot_example_network >/dev/null 2>&1 || docker network create abot_example_network",
     "env": "npm run env:network && docker-compose -f ./env.yml up -d",
     "env:down": "docker-compose -f ./env.yml down",
+    "example:env": "npm run example:network && docker-compose -f ./example/env.yml up -d",
+    "example:env:down": "docker-compose -f ./example/env.yml down",
+    "example:migrate": "npm run example:network && docker-compose -f ./example/migrations.yml up",
+    "example:services": "npm run example:network && docker-compose -f ./example/services.yml up -d",
     "migrate": "lerna run migrate",
     "fixtures": "lerna run fixtures",
     "test": "lerna run test",

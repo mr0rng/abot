@@ -21,25 +21,33 @@ export default class DemandsModel extends BaseModel {
     return (await this.dao.executeOne('SELECT * FROM "Demands" WHERE "id"=$1;', [id])) as Demand;
   }
 
-  async create(scenario: string, recipient: string, payload: object, isActive: boolean): Promise<{ id: string }> {
+  async create(
+    scenario: string, 
+    recipient: string, 
+    payload: object, 
+    isActive: boolean): Promise<{ id: string } | undefined> 
+  {
     try {
       return this.dao.executeOne(
-        'INSERT INTO "Demands" ("id", "date", "scenario", "recipient", "payload", "isActive") VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, $5) RETURNING "id";',
+        `INSERT INTO "Demands" 
+        ("id", "date", "scenario", "recipient", "payload", "isActive") 
+        VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, $5) 
+        RETURNING "id";`,
         [v4(), scenario, recipient, payload, isActive],
       );
     } catch (e) {
-      if (e.constraint === 'Demands_scenario_fkey') {
+      if ((<any> e).constraint === 'Demands_scenario_fkey') {
         throw new DemandsWrongScenarioError();
       }
     }
   }
 
-  async update(id: string, options: UpdateOptions): Promise<Demand> {
+  async update(id: string, options: UpdateOptions): Promise<void> {
     const params: unknown[] = [];
 
     const set_string = Object.keys(options)
       .map((field_name) => {
-        params.push(options[field_name]);
+        params.push((<any> options)[field_name]);
         return `"${field_name}" = $${params.length}`;
       })
       .join(', ');

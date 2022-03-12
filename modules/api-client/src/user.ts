@@ -1,6 +1,6 @@
 import { ApiContractUser, UserGetRequest, UserGetResponse } from '@abot/api-contract/target/user';
 import { PasswordSignUpInRequest, PasswordSignUpInResponse } from '@abot/api-contract/target/user/password';
-import { TelegramUserGetRequest, TelegramUserSignUpRequest } from '@abot/api-contract/target/user/telegram';
+import { TelegramUserGetRequest, TelegramUserSignUpRequest, UserWithActiveDemands } from '@abot/api-contract/target/user/telegram';
 
 import APIClient from '.';
 
@@ -18,7 +18,7 @@ export default class APIClientUser implements ApiContractUser {
   };
 
   telegram = {
-    get: (request: TelegramUserGetRequest): Promise<UserGetResponse> => {
+    get: (request: TelegramUserGetRequest): Promise<UserWithActiveDemands> => {
       return this.apiClient.execute('user.telegram.get', request);
     },
 

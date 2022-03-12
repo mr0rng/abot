@@ -13,7 +13,9 @@ const targetDockerDir = path.join(process.cwd(), 'target-docker');
     `rm -rf ${targetDockerDir}`, 
     `mkdir ${targetDockerDir}`, 
     `mkdir ${path.join(targetDockerDir, 'node_modules')}`,
-    `mkdir ${path.join(targetDockerDir, 'node_modules', '@abot')}`
+    `mkdir ${path.join(targetDockerDir, 'node_modules', '@abot')}`,
+    `cp -r ${path.join(process.cwd(), 'target', '*')} ${targetDockerDir}`,
+    ...(package.docker.resources || []).map(resource => `cp -r ${path.join(process.cwd(), resource)} ${targetDockerDir}`)
   ].join(' && '));
   await exec('rsync -rL --exclude=node_modules ./node_modules/@abot/ ./target-docker/node_modules/@abot/');
   

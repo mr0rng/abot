@@ -1,5 +1,3 @@
-import { v4 } from 'uuid';
-
 import { DemandsCreateRequest, DemandsCreateResponse } from '@abot/api-contract/target/demands';
 
 import { ApplicationError, Command, ForbiddenError } from '..';
@@ -11,8 +9,7 @@ export default new Command<DemandsCreateRequest, DemandsCreateResponse>(
     const INITIAL_STATUS = 'active';
 
     try {
-      const id = v4();
-
+      const id = request.id;
       const args = [
         id,
         request.title,
@@ -35,10 +32,10 @@ export default new Command<DemandsCreateRequest, DemandsCreateResponse>(
       await app.dao.execute(sql, args);
       return { id };
     } catch (e) {
-      if (e.constraint === 'Demands_scenario_fkey') {
+      if ((<any> e).constraint === 'Demands_scenario_fkey') {
         throw new ApplicationError(400, 'Wrong scenario');
       }
-      if (e.constraint === 'Participants_user_fkey') {
+      if ((<any> e).constraint === 'Participants_user_fkey') {
         throw new ForbiddenError();
       }
       throw e;
@@ -47,6 +44,7 @@ export default new Command<DemandsCreateRequest, DemandsCreateResponse>(
   {
     type: 'object',
     properties: {
+      id: { type: 'string' },
       title: { type: 'string' },
       description: { type: 'string' },
       scenario: { type: 'string' },
@@ -54,7 +52,7 @@ export default new Command<DemandsCreateRequest, DemandsCreateResponse>(
       sessionUser: { type: 'string' },
       isSessionUserIsAdmin: { type: 'boolean' },
     },
-    required: ['title', 'description', 'scenario', 'sessionUser', 'isSessionUserIsAdmin'],
+    required: ['id', 'title', 'description', 'scenario', 'sessionUser', 'isSessionUserIsAdmin'],
     additionalProperties: false,
   },
 );

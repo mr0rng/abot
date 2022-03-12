@@ -46,7 +46,7 @@ export type Demand = {
 
 export type ParticipantTypes = 'recipient' | 'donor' | 'declined_donor';
 
-export type Participants = {
+export type Participant = {
   demand: string;
   user: string;
   type: ParticipantTypes;
@@ -54,11 +54,12 @@ export type Participants = {
 };
 
 export type Message = {
+  id: string;
   date: number;
-  demand: number;
+  demand: string;
   author: string;
   type: string;
-  payload: string;
+  payload: Record<string, any>;
 };
 
 export type SearchRequest = {

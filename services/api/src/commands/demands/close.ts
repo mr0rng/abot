@@ -27,14 +27,14 @@ export default new Command<DemandsCloseRequest, void>(
   },
 );
 
-const closeByAdmin = async (app, id) => {
+const closeByAdmin = async (app: Application, id: string) => {
   const sql = `
         UPDATE "Demands" SET "status" = 'closed' WHERE "id" = $1;
       `;
   return app.dao.execute(sql, [id]);
 };
 
-const closeByUser = async (app, id, user) => {
+const closeByUser = async (app: Application, id: string, user: string) => {
   const allowedTypes = ['recipient', 'moderator'].map((x) => `'${x}'`).join(', ');
 
   const sql = `
