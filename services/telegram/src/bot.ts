@@ -31,10 +31,12 @@ class Bot {
 
   private initBot(config: Config) {
     this.token = config.telegram.bot_token as string;
-    // this.tlsOptions = {
-    //   key: readFileSync(config.telegram.bot_key_file),
-    //   cert: readFileSync(config.telegram.bot_cert_file)
-    // };
+    if (config.telegram.bot_key_file && config.telegram.bot_cert_file) {
+      this.tlsOptions = {
+        key: readFileSync(config.telegram.bot_key_file),
+        cert: readFileSync(config.telegram.bot_cert_file)
+      };
+    }
     this.botPort = config.telegram.bot_port;
     this.botPath = '/' + this.token;
     let host = `https://${config.telegram.bot_host}:${this.botPort}`;
@@ -42,7 +44,9 @@ class Bot {
       host = config.telegram.bot_tunnel;
     }
     this.botUrl = `${host}${this.botPath}`;
-    // this.webhookExtra = {certificate: {source: this.tlsOptions.cert} as InputFile};
+    if (config.telegram.bot_cert_self_signed) {
+      this.webhookExtra = { certificate: {source: this.tlsOptions.cert} as InputFile };
+    }
     this.bot = new Telegraf(this.token);
   }
 

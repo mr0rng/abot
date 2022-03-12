@@ -8,10 +8,14 @@ services:
     env_file:
       - main.env
 
-  # abot_telegram:
-  #   hostname: "abot_telegram"
-  #   container_name: "abot_telegram"
-  #   image: "abot/telegram:latest"
+  abot_telegram:
+    hostname: "abot_telegram"
+    container_name: "abot_telegram"
+    image: "abot/telegram:latest"
+    env_file:
+      - main.env
+    ports:
+      - "8080:8080"  # webhook listening port
 
 networks:
   default:

@@ -74,6 +74,7 @@ Build all packages.
 | BOT_TOKEN         |                                                  |
 | BOT_HOST          |                                                  |
 | BOT_PORT          | 8443                                             |
+| BOT_CERT_SELF_SIGNED | false                                         |
 | BOT_CERT_FILE     | dev_bot.pem                                      |
 | BOT_KEY_FILE      | dev_bot.key                                      |
 | BOT_TUNNEL        |                                                  |
