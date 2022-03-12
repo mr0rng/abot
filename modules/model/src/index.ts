@@ -54,11 +54,12 @@ export type Participant = {
 };
 
 export type Message = {
-  date: string;
+  id: string;
+  date: number;
   demand: string;
   author: string;
   type: string;
-  payload: object;
+  payload: Record<string, any>;
 };
 
 export type SearchRequest = {

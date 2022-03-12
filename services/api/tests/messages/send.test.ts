@@ -1,6 +1,4 @@
-import { Message } from '@abot/model';
-
-import { Scenarios, Users, Demands, Participants } from '.';
+import { Demands, Participants, Scenarios, Users } from '.';
 import { TestsEnv } from '..';
 
 const env = new TestsEnv();
@@ -11,37 +9,66 @@ beforeEach(async () => {
     Users,
     Scenarios,
     Demands,
-    Participants
+    Participants,
   });
 });
 afterEach(async () => env.stop());
 
-const request: Omit<Message, 'date'> = {
-  demand: Demands[0].id,
-  author: Users[0].id,
-  type: 'telegram',
-  payload: { text: 'hey there' }
-};
+const adminSession = { sessionUser: 'tstusr', isSessionUserIsAdmin: true };
+const commonSession = { sessionUser: 'tstusr', isSessionUserIsAdmin: false };
 
-test('can create', async () => {
-  const { id } = await env.client.messages.send(request);
-  const message = (await env.dao.executeOne(`SELECT * FROM "Messages" WHERE "id"=$1;`, [id])) as Message;
-  
-  expect(message.demand).toBe(request.demand);
-  expect(message.author).toBe(request.author);
-  expect(message.type).toBe(request.type);
-  expect(message.payload).toStrictEqual(request.payload);
+test('user can send', async () => {
+  const response = await env.client.messages.send({
+    ...commonSession,
+    demand: Demands[0].id,
+    type: 'message',
+    payload: { 'may message': 'here!' },
+  });
+  await expect(env.dao.executeOne(`SELECT * FROM "Messages" WHERE "id" = $1;`, [response.id])).resolves.toStrictEqual({
+    id: response.id,
+    author: commonSession.sessionUser,
+    date: new Date(response.date),
+    demand: Demands[0].id,
+    type: 'message',
+    payload: { 'may message': 'here!' },
+  });
 });
 
-test('raise 403 on wrong demand', async () => {
-  await expect(env.client.messages.send({ ...request, demand: 'BLAH!' })).rejects.toThrow('Forbidden');
+test('admin can send anywhere', async () => {
+  const response = await env.client.messages.send({
+    ...adminSession,
+    demand: Demands[1].id,
+    type: 'message',
+    payload: { 'may message': 'here!' },
+  });
+  await expect(env.dao.executeOne(`SELECT * FROM "Messages" WHERE "id" = $1;`, [response.id])).resolves.toStrictEqual({
+    id: response.id,
+    author: adminSession.sessionUser,
+    date: new Date(response.date),
+    demand: Demands[1].id,
+    type: 'message',
+    payload: { 'may message': 'here!' },
+  });
 });
 
-test('raise 403 on wrong user', async () => {
-  await expect(env.client.messages.send({ ...request, author: 'BLAH!' })).rejects.toThrow('Forbidden');
+test('user can`t send if not participant', async () => {
+  await expect(
+    env.client.messages.send({
+      ...commonSession,
+      demand: Demands[1].id,
+      type: 'message',
+      payload: { 'may message': 'here!' },
+    }),
+  ).rejects.toThrow('Forbidden');
 });
 
-test('raise 403 on no participand', async () => {
-  await env.dao.execute('DELETE from "Participants"');
-  await expect(env.client.messages.send(request)).rejects.toThrow('Forbidden');
+test('admin can`t send if demand does not exists', async () => {
+  await expect(
+    env.client.messages.send({
+      ...adminSession,
+      demand: 'some strange id',
+      type: 'message',
+      payload: { 'may message': 'here!' },
+    }),
+  ).rejects.toThrow('Wrong demand');
 });

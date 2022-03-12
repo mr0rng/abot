@@ -1,4 +1,4 @@
-import { Demand, Message, Participants, Scenario, User } from '@abot/model';
+import { Demand, Message, Participant, Scenario, User } from '@abot/model';
 
 import DAO from '.';
 
@@ -44,5 +44,5 @@ export type DBData = {
   UsersScenarios?: UserScenario[];
   Demands?: Demand[];
   Messages?: Message[];
-  Participants?: Participants[];
+  Participants?: Participant[];
 };
