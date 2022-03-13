@@ -50,7 +50,7 @@ export default new Command<ParticipantGetRequest, UserGetResponse>(
     properties: {
       demand: { type: 'string' },
       user: { type: 'string', nullable: true },
-      type: { type: 'string', nullable: true }
+      type: { type: 'string', nullable: true },
     },
     required: ['demand'],
     additionalProperties: false,

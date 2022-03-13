@@ -62,14 +62,14 @@ export default new Command<TelegramUserGetRequest, UserWithActiveDemands>(
       isAdmin: user.isAdmin,
       isBanned: false,
       payload,
-      demands: demands
+      demands: demands,
     };
   },
   {
     type: 'object',
     properties: {
       telegramId: { type: 'string' },
-      login: { type: 'string', nullable: true }
+      login: { type: 'string', nullable: true },
     },
     required: ['telegramId'],
     additionalProperties: false,

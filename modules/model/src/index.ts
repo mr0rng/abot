@@ -55,7 +55,7 @@ export type Participant = {
 
 export type Message = {
   id: string;
-  date: number;
+  date: string;
   demand: string;
   author: string;
   type: string;

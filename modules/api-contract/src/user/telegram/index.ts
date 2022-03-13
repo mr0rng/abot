@@ -1,4 +1,5 @@
 import { Demand, ParticipantTypes, User } from '@abot/model';
+
 import { UserGetResponse } from '..';
 
 export interface ApiContractUserTelegram {
@@ -17,5 +18,5 @@ export type TelegramUserSignUpRequest = {
 };
 
 export type UserWithActiveDemands = User & {
-  demands: (Omit<Demand, 'title' | 'date' | 'scenario' | 'status' | 'payload'> & { role: ParticipantTypes })[]
+  demands: (Omit<Demand, 'title' | 'date' | 'scenario' | 'status' | 'payload'> & { role: ParticipantTypes })[];
 };

@@ -1,5 +1,5 @@
-import { Demand, WithSessionUser } from '@abot/model';
 import { UnexpectedNumberOfRows } from '@abot/dao';
+import { Demand, WithSessionUser } from '@abot/model';
 
 import { Command, NotFoundError } from '..';
 import Application from '../../app';

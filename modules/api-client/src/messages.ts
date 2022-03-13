@@ -1,9 +1,9 @@
-import { 
-  ApiContractMessages, 
-  MessageSendRequest, 
-  MessageSendResponse, 
-  MessagesSearchRequest, 
-  MessageNotification 
+import {
+  ApiContractMessages,
+  MessageNotification,
+  MessageSendRequest,
+  MessageSendResponse,
+  MessagesSearchRequest,
 } from '@abot/api-contract/target/messages';
 import { Message } from '@abot/model';
 

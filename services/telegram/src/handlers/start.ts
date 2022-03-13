@@ -1,13 +1,9 @@
-import { Handler } from "../handler";
+import { Handler } from '../handler';
 
-const startMessage = 
-`Hello. This is a bot to connect those who need with those who can provide.
+const startMessage = `Hello. This is a bot to connect those who need with those who can provide.
 Text /help for more information, or go and search for what you need by
 typing the bot's @username and query in this chat`;
 
-export default new Handler(
-  'start',
-  ctx => {
-    ctx.reply(startMessage);
-  }
-);
+export default new Handler('start', (ctx) => {
+  ctx.reply(startMessage);
+});
