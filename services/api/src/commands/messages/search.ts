@@ -62,8 +62,6 @@ const search = async (
   SELECT * FROM "Messages" WHERE ${where} ORDER BY "date" ${order == 1 ? 'ASC' : 'DESC'} LIMIT $${args.length};
   `;
 
-  console.log(sql);
-  console.log(args);
   const result = await app.dao.execute(sql, args);
   return result.rows as MessageSearchResponse;
 };

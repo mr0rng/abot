@@ -10,11 +10,11 @@ import Application from '../../app';
 export default new Command<MessageSendRequest, MessageSendResponse>(
   'messages.send',
   async (app: Application, request: MessageSendRequest): Promise<MessageSendResponse> => {
-    const result = request.isSessionUserIsAdmin
+    const result = await (request.isSessionUserIsAdmin
       ? sendAdminMessage(app, request.demand, request.sessionUser, request.type, request.payload)
-      : sendCommonMessage(app, request.demand, request.sessionUser, request.type, request.payload);
+      : sendCommonMessage(app, request.demand, request.sessionUser, request.type, request.payload));
 
-    // notifyTelegramRecipients(app, request);
+    await notifyTelegramRecipients(app, request);
 
     return result;
   },
@@ -33,23 +33,29 @@ export default new Command<MessageSendRequest, MessageSendResponse>(
 );
 
 const notifyTelegramRecipients = async (app, request) => {
-  const sql = `
-      SELECT u."id", u."login", u."type", u."isAdmin", u."isBanned", u."payload"
-      FROM "Users" u
-        JOIN "Participants" p ON p.user = u.id
-      WHERE
-        p."demand" = $1
-        AND p."user" <> $2
-        AND u."type" = $3
-    `;
-  const { rows } = await app.dao.execute<User>(sql, [request.demand, request.sessionUser, 'telegram']);
+  const DECLINED_TYPES = ['declined_donor'];
 
-  return await app.apiClient.messages.notify({
-    demand: request.demand,
-    sender: request.sessionUser,
-    payload: request.payload,
-    recipients: rows,
-  });
+  const sql = `
+      SELECT "user"
+      FROM "Participants"
+      WHERE
+        "demand" = $1
+        AND "user" <> $2
+        AND "type" <> ANY($3)
+    `;
+  const { rows } = await app.dao.execute(sql, [request.demand, request.sessionUser, DECLINED_TYPES]);
+
+  try {
+    return await app.apiClient.messages.notify({
+      demand: request.demand,
+      sender: request.sessionUser,
+      payload: request.payload,
+      recipients: rows.map(({ user }) => user),
+    });
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
 };
 
 const sendCommonMessage = async (

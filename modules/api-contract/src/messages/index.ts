@@ -20,5 +20,5 @@ export type MessageNotification = {
   demand: string;
   sender: string;
   payload: object;
-  recipients: User[];
+  recipients: string[];
 };
