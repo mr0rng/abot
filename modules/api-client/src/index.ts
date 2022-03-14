@@ -5,8 +5,8 @@ import { Config } from '@abot/config';
 
 import APIClientDemands from './demands';
 import APIClientMessages from './messages';
-import APIClientScenarios from './scenarios';
 import APIClientParticipants from './participants';
+import APIClientScenarios from './scenarios';
 import APIClientUser from './user';
 import APIClientUsers from './users';
 

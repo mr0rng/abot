@@ -1,5 +1,5 @@
-import TestsDAO from '@abot/dao/target/tests';
 import config from '@abot/config';
+import TestsDAO from '@abot/dao/target/tests';
 import { Demand, Scenario, User } from '@abot/model';
 
 const Users: User[] = [

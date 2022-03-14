@@ -28,6 +28,7 @@ export default new Command<DemandsSearchRequest & SearchRequest, Demand[]>(
             : `INNER JOIN "Participants" p2 ON p2.demand = d.id AND p2.user = $${params.push(request.login)}`
         }
       WHERE ${expressions(request, params)}
+      ORDER BY d."date" ASC
       LIMIT $${params.push(request.limit)}
       OFFSET $${params.push(request.offset)}
     `;

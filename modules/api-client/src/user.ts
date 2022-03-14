@@ -1,6 +1,10 @@
 import { ApiContractUser, UserGetRequest, UserGetResponse } from '@abot/api-contract/target/user';
 import { PasswordSignUpInRequest, PasswordSignUpInResponse } from '@abot/api-contract/target/user/password';
-import { TelegramUserGetRequest, TelegramUserSignUpRequest, UserWithActiveDemands } from '@abot/api-contract/target/user/telegram';
+import {
+  TelegramUserGetRequest,
+  TelegramUserSignUpRequest,
+  UserWithActiveDemands,
+} from '@abot/api-contract/target/user/telegram';
 
 import APIClient from '.';
 

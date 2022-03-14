@@ -54,7 +54,6 @@ class Application {
     if (this.connection == null) {
       throw new Error('Application was not started');
     }
-
     for await (const message of this.connection.subscribe(command.path)) {
       command
         .execute(this, this.codec.decode(message.data))

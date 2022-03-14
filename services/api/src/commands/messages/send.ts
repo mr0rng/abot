@@ -2,34 +2,19 @@ import { v4 } from 'uuid';
 
 import { MessageSendRequest, MessageSendResponse } from '@abot/api-contract/target/messages';
 import { UnexpectedNumberOfRows } from '@abot/dao';
+import { User } from '@abot/model';
 
 import { ApplicationError, Command, ForbiddenError } from '..';
 import Application from '../../app';
-import { User } from '@abot/model';
 
 export default new Command<MessageSendRequest, MessageSendResponse>(
   'messages.send',
   async (app: Application, request: MessageSendRequest): Promise<MessageSendResponse> => {
-    const result = request.isSessionUserIsAdmin
+    const result = await (request.isSessionUserIsAdmin
       ? sendAdminMessage(app, request.demand, request.sessionUser, request.type, request.payload)
-      : sendCommonMessage(app, request.demand, request.sessionUser, request.type, request.payload);
+      : sendCommonMessage(app, request.demand, request.sessionUser, request.type, request.payload));
 
-    const sql = `
-      SELECT u."id", u."login", u."type", u."isAdmin", u."isBanned", u."payload" 
-      FROM "Users" u
-        JOIN "Participants" p ON p.user = u.id
-      WHERE
-        p."demand" = $1
-        AND p."user" <> $2
-        AND u."type" = $3
-    `;
-    const { rows } = await app.dao.execute<User>(sql, [request.demand, request.sessionUser, 'telegram']);
-    app.apiClient.messages.notify({
-      demand: request.demand,
-      sender: request.sessionUser,
-      payload: request.payload,
-      recipients: rows
-    });
+    await notifyTelegramRecipients(app, request);
 
     return result;
   },
@@ -46,6 +31,32 @@ export default new Command<MessageSendRequest, MessageSendResponse>(
     additionalProperties: false,
   },
 );
+
+const notifyTelegramRecipients = async (app, request) => {
+  const DECLINED_TYPES = ['declined_donor'];
+
+  const sql = `
+      SELECT "user"
+      FROM "Participants"
+      WHERE
+        "demand" = $1
+        AND "user" <> $2
+        AND "type" <> ANY($3)
+    `;
+  const { rows } = await app.dao.execute(sql, [request.demand, request.sessionUser, DECLINED_TYPES]);
+
+  try {
+    return await app.apiClient.messages.notify({
+      demand: request.demand,
+      sender: request.sessionUser,
+      payload: request.payload,
+      recipients: rows.map(({ user }) => user),
+    });
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
 
 const sendCommonMessage = async (
   app: Application,
